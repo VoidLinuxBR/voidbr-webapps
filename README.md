@@ -1,3 +1,3 @@
-# voidbr-pkgfile
+# voidbr-webapps
 
-Template for VoidBR pkgmake/pkgfile packages
+Gerenciador de WebApps para o VoidBR

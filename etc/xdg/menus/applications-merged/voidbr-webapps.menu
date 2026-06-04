@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+  "http://www.freedesktop.org/standards/menu-spec/1.0/menu.dtd">
+
+<Menu>
+    <Name>Applications</Name>
+
+    <DefaultAppDirs/>
+    <DefaultDirectoryDirs/>
+
+    <Menu>
+        <Name>VoidBR WebApps</Name>
+        <Directory>voidbr-webapps.directory</Directory>
+        <Layout>
+            <Merge type="menus" />
+            <Merge type="files" />
+            <Menuname>VoidBR WebApps</Menuname>
+        </Layout>
+        <Include>
+            <Category>X-VoidBR-WebApps</Category>
+        </Include>
+    </Menu>
+</Menu>
