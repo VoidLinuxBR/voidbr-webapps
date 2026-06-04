@@ -28,7 +28,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib
 
-__version__ = "1.3.9.6"
+__version__ = "1.3.9.2"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -52,7 +52,6 @@ CSS_DATA = b"""
 .btn-exit { color: white; background-color: #e01b24; }
 .success-icon { color: #26a269; margin-right: 8px; }
 .app-icon { margin-right: 8px; }
-.error-text { color: #c01c28; font-size: 11px; margin-top: 2px; }
 """
 
 class WebAppManager(Gtk.Application):
@@ -251,42 +250,23 @@ class MainWindow(Gtk.ApplicationWindow):
         with open(JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(self.apps, f, indent=2, ensure_ascii=False)
 
-    def is_valid_url(self, url):
-        """Valida se a estrutura possui um domínio com extensão válida (ex: teste.com, teste.com.br)"""
-        regex = re.compile(
-            r'^(?:http|ftp)s?://' # http:// ou https://
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' # domínio obrigatório (ex: .com)
-            r'localhost|' # localhost
-            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # IP
-            r'(?::\d+)?' # porta
-            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-        return re.match(regex, url) is not None
-
     def on_add(self, button):
-        dialog = Gtk.Window(title=_("Novo WebApp"), transient_for=self, modal=True, default_width=420, destroy_with_parent=True)
-        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
+        dialog = Gtk.Window(title=_("Novo WebApp"), transient_for=self, modal=True, default_width=400, destroy_with_parent=True)
+        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
         dialog.set_child(main_layout)
 
-        grid = Gtk.Grid(row_spacing=5, column_spacing=10)
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10)
         main_layout.append(grid)
 
         url_entry = Gtk.Entry(placeholder_text="https://exemplo.com", hexpand=True)
         name_entry = Gtk.Entry(placeholder_text=_("Nome do App"), hexpand=True)
 
-        url_error_label = Gtk.Label(xalign=0)
-        url_error_label.add_css_class("error-text")
-        name_error_label = Gtk.Label(xalign=0)
-        name_error_label.add_css_class("error-text")
-
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
-        grid.attach(url_error_label, 1, 1, 1, 1)
+        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 1, 1, 1)
+        grid.attach(name_entry, 1, 1, 1, 1)
 
-        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 2, 1, 1)
-        grid.attach(name_entry, 1, 2, 1, 1)
-        grid.attach(name_error_label, 1, 3, 1, 1)
-
-        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END, margin_top=10)
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END)
         main_layout.append(button_box)
 
         btn_cancel = Gtk.Button(label=_("Cancelar"))
@@ -298,36 +278,15 @@ class MainWindow(Gtk.ApplicationWindow):
         def save_clicked(b):
             name = name_entry.get_text().strip()
             url = url_entry.get_text().strip()
-            
-            # Resetar mensagens anteriores
-            name_error_label.set_text("")
-            url_error_label.set_text("")
-            has_error = False
-
-            if not name:
-                name_error_label.set_text(_("O campo nome é obrigatório."))
-                has_error = True
-
-            if not url:
-                url_error_label.set_text(_("O campo URL é obrigatório."))
-                has_error = True
-            else:
+            if name and url:
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
-
-                if not self.is_valid_url(url):
-                    url_error_label.set_text(_("URL inválida. Use um formato como: https://exemplo.com"))
-                    has_error = True
-
-            if has_error:
-                return
-
-            new_app = {"name": name, "url": url, "icon": ""}
-            self.apps.append(new_app)
-            self.save_apps()
-            self.refresh()
-            
-            threading.Thread(target=self.download_favicon, args=(new_app, url), daemon=True).start()
+                new_app = {"name": name, "url": url, "icon": ""}
+                self.apps.append(new_app)
+                self.save_apps()
+                self.refresh()
+                
+                threading.Thread(target=self.download_favicon, args=(new_app, url), daemon=True).start()
             dialog.close()
 
         btn_save.connect("clicked", save_clicked)
@@ -340,30 +299,22 @@ class MainWindow(Gtk.ApplicationWindow):
         if pos == Gtk.INVALID_LIST_POSITION: return
         app = self.apps[pos]
 
-        dialog = Gtk.Window(title=_("Editar WebApp"), transient_for=self, modal=True, default_width=420, destroy_with_parent=True)
-        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
+        dialog = Gtk.Window(title=_("Editar WebApp"), transient_for=self, modal=True, default_width=400, destroy_with_parent=True)
+        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
         dialog.set_child(main_layout)
 
-        grid = Gtk.Grid(row_spacing=5, column_spacing=10)
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10)
         main_layout.append(grid)
 
         url_entry = Gtk.Entry(text=app["url"], hexpand=True)
         name_entry = Gtk.Entry(text=app["name"], hexpand=True)
 
-        url_error_label = Gtk.Label(xalign=0)
-        url_error_label.add_css_class("error-text")
-        name_error_label = Gtk.Label(xalign=0)
-        name_error_label.add_css_class("error-text")
-
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
-        grid.attach(url_error_label, 1, 1, 1, 1)
+        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 1, 1, 1)
+        grid.attach(name_entry, 1, 1, 1, 1)
 
-        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 2, 1, 1)
-        grid.attach(name_entry, 1, 2, 1, 1)
-        grid.attach(name_error_label, 1, 3, 1, 1)
-
-        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END, margin_top=10)
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END)
         main_layout.append(button_box)
 
         btn_cancel = Gtk.Button(label=_("Cancelar"))
@@ -375,42 +326,21 @@ class MainWindow(Gtk.ApplicationWindow):
         def save_clicked(b):
             name = name_entry.get_text().strip()
             url = url_entry.get_text().strip()
-            
-            name_error_label.set_text("")
-            url_error_label.set_text("")
-            has_error = False
-
-            if not name:
-                name_error_label.set_text(_("O campo nome é obrigatório."))
-                has_error = True
-
-            if not url:
-                url_error_label.set_text(_("O campo URL é obrigatório."))
-                has_error = True
-            else:
+            if name and url:
                 if not url.startswith(("http://", "https://")):
                     url = "https://" + url
-
-                if not self.is_valid_url(url):
-                    url_error_label.set_text(_("URL inválida. Use um formato como: https://exemplo.com"))
-                    has_error = True
-
-            if has_error:
-                return
-
-            if url != app["url"]:
-                if app.get("icon") and os.path.exists(app["icon"]):
-                    try: os.remove(app["icon"])
-                    except: pass
-                app["icon"] = ""
-                threading.Thread(target=self.download_favicon, args=(app, url), daemon=True).start()
-            
-            app["name"] = name
-            app["url"] = url
-            self.save_apps()
-            self.refresh()
-            
-            self.generate_desktop_file(app)
+                if url != app["url"]:
+                    if app.get("icon") and os.path.exists(app["icon"]):
+                        try: os.remove(app["icon"])
+                        except: pass
+                    app["icon"] = ""
+                    threading.Thread(target=self.download_favicon, args=(app, url), daemon=True).start()
+                app["name"] = name
+                app["url"] = url
+                self.save_apps()
+                self.refresh()
+                
+                self.generate_desktop_file(app)
             dialog.close()
 
         btn_save.connect("clicked", save_clicked)
@@ -513,10 +443,7 @@ Categories=Network;X-VoidBR-WebApps;
             website="https://github.com/voidlinuxbr/voidbr-webapps",
             website_label=_("Website do Projeto"),
             authors=["Vilmar Catafesta <vcatafesta@gmail.com>"],
-            artists=[
-                "Vilmar Catafesta <vcatafesta@gmail.com>",
-                "Eduardo Charquero <eduardocharquero@gmail.com>"
-            ]
+            artists=["Eduardo Charquero <eduardocharquero@gmail.com>"]
         )
         about.set_logo_icon_name("voidbr")
         about.present()

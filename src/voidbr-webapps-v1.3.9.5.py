@@ -28,7 +28,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib
 
-__version__ = "1.3.9.6"
+__version__ = "1.3.9.5"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"

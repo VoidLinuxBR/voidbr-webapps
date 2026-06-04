@@ -28,7 +28,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib
 
-__version__ = "1.3.9.6"
+__version__ = "1.3.9.4"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -52,7 +52,6 @@ CSS_DATA = b"""
 .btn-exit { color: white; background-color: #e01b24; }
 .success-icon { color: #26a269; margin-right: 8px; }
 .app-icon { margin-right: 8px; }
-.error-text { color: #c01c28; font-size: 11px; margin-top: 2px; }
 """
 
 class WebAppManager(Gtk.Application):
@@ -251,42 +250,43 @@ class MainWindow(Gtk.ApplicationWindow):
         with open(JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(self.apps, f, indent=2, ensure_ascii=False)
 
+    def show_warning_dialog(self, parent_win, title, message):
+        """Exibe um diálogo nativo moderno do GTK4 (AlertDialog)"""
+        alert = Gtk.AlertDialog(
+            title=title,
+            message=message
+        )
+        alert.set_buttons([_("OK")])
+        alert.choose(parent_win, None, None)
+
     def is_valid_url(self, url):
-        """Valida se a estrutura possui um domínio com extensão válida (ex: teste.com, teste.com.br)"""
+        """Valida a estrutura básica de uma URL usando Expressão Regular"""
         regex = re.compile(
             r'^(?:http|ftp)s?://' # http:// ou https://
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' # domínio obrigatório (ex: .com)
-            r'localhost|' # localhost
-            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # IP
-            r'(?::\d+)?' # porta
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' # domínio
+            r'localhost|' # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...ou endereço IP
+            r'(?::\d+)?' # porta opcional
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         return re.match(regex, url) is not None
 
     def on_add(self, button):
-        dialog = Gtk.Window(title=_("Novo WebApp"), transient_for=self, modal=True, default_width=420, destroy_with_parent=True)
-        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
+        dialog = Gtk.Window(title=_("Novo WebApp"), transient_for=self, modal=True, default_width=400, destroy_with_parent=True)
+        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
         dialog.set_child(main_layout)
 
-        grid = Gtk.Grid(row_spacing=5, column_spacing=10)
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10)
         main_layout.append(grid)
 
         url_entry = Gtk.Entry(placeholder_text="https://exemplo.com", hexpand=True)
         name_entry = Gtk.Entry(placeholder_text=_("Nome do App"), hexpand=True)
 
-        url_error_label = Gtk.Label(xalign=0)
-        url_error_label.add_css_class("error-text")
-        name_error_label = Gtk.Label(xalign=0)
-        name_error_label.add_css_class("error-text")
-
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
-        grid.attach(url_error_label, 1, 1, 1, 1)
+        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 1, 1, 1)
+        grid.attach(name_entry, 1, 1, 1, 1)
 
-        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 2, 1, 1)
-        grid.attach(name_entry, 1, 2, 1, 1)
-        grid.attach(name_error_label, 1, 3, 1, 1)
-
-        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END, margin_top=10)
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END)
         main_layout.append(button_box)
 
         btn_cancel = Gtk.Button(label=_("Cancelar"))
@@ -299,27 +299,21 @@ class MainWindow(Gtk.ApplicationWindow):
             name = name_entry.get_text().strip()
             url = url_entry.get_text().strip()
             
-            # Resetar mensagens anteriores
-            name_error_label.set_text("")
-            url_error_label.set_text("")
-            has_error = False
-
             if not name:
-                name_error_label.set_text(_("O campo nome é obrigatório."))
-                has_error = True
+                self.show_warning_dialog(dialog, _("Campo Obrigatório"), _("Por favor, insira um nome para o WebApp."))
+                return
 
             if not url:
-                url_error_label.set_text(_("O campo URL é obrigatório."))
-                has_error = True
-            else:
-                if not url.startswith(("http://", "https://")):
-                    url = "https://" + url
+                self.show_warning_dialog(dialog, _("Campo Obrigatório"), _("Por favor, insira um endereço URL."))
+                return
 
-                if not self.is_valid_url(url):
-                    url_error_label.set_text(_("URL inválida. Use um formato como: https://exemplo.com"))
-                    has_error = True
+            # Formata automaticamente se omitir o protocolo
+            if not url.startswith(("http://", "https://")):
+                url = "https://" + url
 
-            if has_error:
+            # Executa a validação estrutural da URL
+            if not self.is_valid_url(url):
+                self.show_warning_dialog(dialog, _("URL Inválida"), _("O endereço introduzido não parece ser uma URL válida.\nExemplo correto: https://exemplo.com"))
                 return
 
             new_app = {"name": name, "url": url, "icon": ""}
@@ -340,30 +334,22 @@ class MainWindow(Gtk.ApplicationWindow):
         if pos == Gtk.INVALID_LIST_POSITION: return
         app = self.apps[pos]
 
-        dialog = Gtk.Window(title=_("Editar WebApp"), transient_for=self, modal=True, default_width=420, destroy_with_parent=True)
-        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
+        dialog = Gtk.Window(title=_("Editar WebApp"), transient_for=self, modal=True, default_width=400, destroy_with_parent=True)
+        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
         dialog.set_child(main_layout)
 
-        grid = Gtk.Grid(row_spacing=5, column_spacing=10)
+        grid = Gtk.Grid(row_spacing=10, column_spacing=10)
         main_layout.append(grid)
 
         url_entry = Gtk.Entry(text=app["url"], hexpand=True)
         name_entry = Gtk.Entry(text=app["name"], hexpand=True)
 
-        url_error_label = Gtk.Label(xalign=0)
-        url_error_label.add_css_class("error-text")
-        name_error_label = Gtk.Label(xalign=0)
-        name_error_label.add_css_class("error-text")
-
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
-        grid.attach(url_error_label, 1, 1, 1, 1)
+        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 1, 1, 1)
+        grid.attach(name_entry, 1, 1, 1, 1)
 
-        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 2, 1, 1)
-        grid.attach(name_entry, 1, 2, 1, 1)
-        grid.attach(name_error_label, 1, 3, 1, 1)
-
-        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END, margin_top=10)
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END)
         main_layout.append(button_box)
 
         btn_cancel = Gtk.Button(label=_("Cancelar"))
@@ -376,26 +362,19 @@ class MainWindow(Gtk.ApplicationWindow):
             name = name_entry.get_text().strip()
             url = url_entry.get_text().strip()
             
-            name_error_label.set_text("")
-            url_error_label.set_text("")
-            has_error = False
-
             if not name:
-                name_error_label.set_text(_("O campo nome é obrigatório."))
-                has_error = True
+                self.show_warning_dialog(dialog, _("Campo Obrigatório"), _("Por favor, insira um nome para o WebApp."))
+                return
 
             if not url:
-                url_error_label.set_text(_("O campo URL é obrigatório."))
-                has_error = True
-            else:
-                if not url.startswith(("http://", "https://")):
-                    url = "https://" + url
+                self.show_warning_dialog(dialog, _("Campo Obrigatório"), _("Por favor, insira um endereço URL."))
+                return
 
-                if not self.is_valid_url(url):
-                    url_error_label.set_text(_("URL inválida. Use um formato como: https://exemplo.com"))
-                    has_error = True
+            if not url.startswith(("http://", "https://")):
+                url = "https://" + url
 
-            if has_error:
+            if not self.is_valid_url(url):
+                self.show_warning_dialog(dialog, _("URL Inválida"), _("O endereço introduzido não parece ser uma URL válida.\nExemplo correto: https://exemplo.com"))
                 return
 
             if url != app["url"]:
@@ -513,10 +492,7 @@ Categories=Network;X-VoidBR-WebApps;
             website="https://github.com/voidlinuxbr/voidbr-webapps",
             website_label=_("Website do Projeto"),
             authors=["Vilmar Catafesta <vcatafesta@gmail.com>"],
-            artists=[
-                "Vilmar Catafesta <vcatafesta@gmail.com>",
-                "Eduardo Charquero <eduardocharquero@gmail.com>"
-            ]
+            artists=["Eduardo Charquero <eduardocharquero@gmail.com>"]
         )
         about.set_logo_icon_name("voidbr")
         about.present()
