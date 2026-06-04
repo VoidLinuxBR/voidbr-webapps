@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-04 14:12-0400\n"
-"PO-Revision-Date: 2026-06-04 14:12-0400\n"
+"POT-Creation-Date: 2026-06-04 14:25-0400\n"
+"PO-Revision-Date: 2026-06-04 14:25-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,70 +14,86 @@ msgstr ""
 "Language: ru\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:76
+#: usr/local/bin/voidbr-webapps:84
 msgid "Adicionar"
 msgstr "Чтобы добавить"
 
-#: usr/local/bin/voidbr-webapps:79
+#: usr/local/bin/voidbr-webapps:88
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "Добавьте новое веб-приложение и автоматически создайте его ярлык."
 
-#: usr/local/bin/voidbr-webapps:82 usr/local/bin/voidbr-webapps:184
+#: usr/local/bin/voidbr-webapps:92 usr/local/bin/voidbr-webapps:212
 msgid "Remover"
 msgstr "удалять"
 
-#: usr/local/bin/voidbr-webapps:85
+#: usr/local/bin/voidbr-webapps:96
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "Удалите выбранное веб-приложение и удалите его ярлык из системы."
 
-#: usr/local/bin/voidbr-webapps:88 usr/local/bin/voidbr-webapps:183
+#: usr/local/bin/voidbr-webapps:100 usr/local/bin/voidbr-webapps:211
 msgid "Gerar Atalho"
 msgstr "Создать ярлык"
 
-#: usr/local/bin/voidbr-webapps:91
+#: usr/local/bin/voidbr-webapps:104
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "Восстановить вручную выбранный файл ярлыка веб-приложения."
 
-#: usr/local/bin/voidbr-webapps:96
+#: usr/local/bin/voidbr-webapps:110
+msgid "Sobre"
+msgstr "На"
+
+#: usr/local/bin/voidbr-webapps:114
+msgid "Ver informações, desenvolvedores e créditos do projeto"
+msgstr "Просмотр информации о проекте, разработчиках и авторстве"
+
+#: usr/local/bin/voidbr-webapps:118
 msgid "Sair"
 msgstr "Чтобы выйти"
 
-#: usr/local/bin/voidbr-webapps:99
+#: usr/local/bin/voidbr-webapps:121
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "Закройте менеджер VoidBR WebApps."
 
-#: usr/local/bin/voidbr-webapps:181
+#: usr/local/bin/voidbr-webapps:209
 msgid "Executar"
 msgstr "Чтобы выполнить"
 
-#: usr/local/bin/voidbr-webapps:182
+#: usr/local/bin/voidbr-webapps:210
 msgid "Editar"
 msgstr "Редактировать"
 
-#: usr/local/bin/voidbr-webapps:233
+#: usr/local/bin/voidbr-webapps:272
 msgid "Novo WebApp"
 msgstr "Новое веб-приложение"
 
-#: usr/local/bin/voidbr-webapps:241
+#: usr/local/bin/voidbr-webapps:292
 msgid "Nome do App"
 msgstr "Имя приложения"
 
-#: usr/local/bin/voidbr-webapps:243 usr/local/bin/voidbr-webapps:291
+#: usr/local/bin/voidbr-webapps:294 usr/local/bin/voidbr-webapps:360
 msgid "URL:"
 msgstr "URL-адрес:"
 
-#: usr/local/bin/voidbr-webapps:245 usr/local/bin/voidbr-webapps:293
+#: usr/local/bin/voidbr-webapps:296 usr/local/bin/voidbr-webapps:362
 msgid "Nome:"
 msgstr "Имя:"
 
-#: usr/local/bin/voidbr-webapps:251 usr/local/bin/voidbr-webapps:299
+#: usr/local/bin/voidbr-webapps:304 usr/local/bin/voidbr-webapps:370
 msgid "Cancelar"
 msgstr "Отмена"
 
-#: usr/local/bin/voidbr-webapps:254 usr/local/bin/voidbr-webapps:302
+#: usr/local/bin/voidbr-webapps:307 usr/local/bin/voidbr-webapps:373
 msgid "Salvar"
 msgstr "Сохранять"
 
-#: usr/local/bin/voidbr-webapps:281
+#: usr/local/bin/voidbr-webapps:338
 msgid "Editar WebApp"
 msgstr "Редактировать веб-приложение"
+
+#: usr/local/bin/voidbr-webapps:522
+msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
+msgstr "Официальный менеджер веб-приложений экосистемы VoidBR."
+
+#: usr/local/bin/voidbr-webapps:524
+msgid "Website do Projeto"
+msgstr "Сайт проекта"

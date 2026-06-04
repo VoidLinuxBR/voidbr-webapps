@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-04 14:12-0400\n"
-"PO-Revision-Date: 2026-06-04 14:12-0400\n"
+"POT-Creation-Date: 2026-06-04 14:25-0400\n"
+"PO-Revision-Date: 2026-06-04 14:25-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,70 +14,86 @@ msgstr ""
 "Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:76
+#: usr/local/bin/voidbr-webapps:84
 msgid "Adicionar"
 msgstr "Adicionar"
 
-#: usr/local/bin/voidbr-webapps:79
+#: usr/local/bin/voidbr-webapps:88
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 
-#: usr/local/bin/voidbr-webapps:82 usr/local/bin/voidbr-webapps:184
+#: usr/local/bin/voidbr-webapps:92 usr/local/bin/voidbr-webapps:212
 msgid "Remover"
 msgstr "Removedor"
 
-#: usr/local/bin/voidbr-webapps:85
+#: usr/local/bin/voidbr-webapps:96
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "Remover o WebApp selecionado e apagar seu atalho do sistema"
 
-#: usr/local/bin/voidbr-webapps:88 usr/local/bin/voidbr-webapps:183
+#: usr/local/bin/voidbr-webapps:100 usr/local/bin/voidbr-webapps:211
 msgid "Gerar Atalho"
 msgstr "Gerar Atalho"
 
-#: usr/local/bin/voidbr-webapps:91
+#: usr/local/bin/voidbr-webapps:104
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 
-#: usr/local/bin/voidbr-webapps:96
+#: usr/local/bin/voidbr-webapps:110
+msgid "Sobre"
+msgstr "Sobre"
+
+#: usr/local/bin/voidbr-webapps:114
+msgid "Ver informações, desenvolvedores e créditos do projeto"
+msgstr "Ver informações, desenvolvedores e créditos do projeto"
+
+#: usr/local/bin/voidbr-webapps:118
 msgid "Sair"
 msgstr "Sair"
 
-#: usr/local/bin/voidbr-webapps:99
+#: usr/local/bin/voidbr-webapps:121
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "Fechar o gerenciador VoidBR WebApps"
 
-#: usr/local/bin/voidbr-webapps:181
+#: usr/local/bin/voidbr-webapps:209
 msgid "Executar"
 msgstr "Executar"
 
-#: usr/local/bin/voidbr-webapps:182
+#: usr/local/bin/voidbr-webapps:210
 msgid "Editar"
 msgstr "Editar"
 
-#: usr/local/bin/voidbr-webapps:233
+#: usr/local/bin/voidbr-webapps:272
 msgid "Novo WebApp"
 msgstr "Novo WebApp"
 
-#: usr/local/bin/voidbr-webapps:241
+#: usr/local/bin/voidbr-webapps:292
 msgid "Nome do App"
 msgstr "Nome do App"
 
-#: usr/local/bin/voidbr-webapps:243 usr/local/bin/voidbr-webapps:291
+#: usr/local/bin/voidbr-webapps:294 usr/local/bin/voidbr-webapps:360
 msgid "URL:"
 msgstr "URL:"
 
-#: usr/local/bin/voidbr-webapps:245 usr/local/bin/voidbr-webapps:293
+#: usr/local/bin/voidbr-webapps:296 usr/local/bin/voidbr-webapps:362
 msgid "Nome:"
 msgstr "Nome:"
 
-#: usr/local/bin/voidbr-webapps:251 usr/local/bin/voidbr-webapps:299
+#: usr/local/bin/voidbr-webapps:304 usr/local/bin/voidbr-webapps:370
 msgid "Cancelar"
 msgstr "Cancelar"
 
-#: usr/local/bin/voidbr-webapps:254 usr/local/bin/voidbr-webapps:302
+#: usr/local/bin/voidbr-webapps:307 usr/local/bin/voidbr-webapps:373
 msgid "Salvar"
 msgstr "Salvar"
 
-#: usr/local/bin/voidbr-webapps:281
+#: usr/local/bin/voidbr-webapps:338
 msgid "Editar WebApp"
 msgstr "Editar WebApp"
+
+#: usr/local/bin/voidbr-webapps:522
+msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
+msgstr "Gerenciador oficial de WebApps para o ecossistema VoidBR."
+
+#: usr/local/bin/voidbr-webapps:524
+msgid "Website do Projeto"
+msgstr "Website do Projeto"

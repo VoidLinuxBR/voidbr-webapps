@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-04 14:12-0400\n"
-"PO-Revision-Date: 2026-06-04 14:12-0400\n"
+"POT-Creation-Date: 2026-06-04 14:25-0400\n"
+"PO-Revision-Date: 2026-06-04 14:25-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,70 +14,86 @@ msgstr ""
 "Language: ko\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:76
+#: usr/local/bin/voidbr-webapps:84
 msgid "Adicionar"
 msgstr "추가하려면"
 
-#: usr/local/bin/voidbr-webapps:79
+#: usr/local/bin/voidbr-webapps:88
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "새 WebApp을 추가하고 바로가기를 자동으로 생성합니다."
 
-#: usr/local/bin/voidbr-webapps:82 usr/local/bin/voidbr-webapps:184
+#: usr/local/bin/voidbr-webapps:92 usr/local/bin/voidbr-webapps:212
 msgid "Remover"
 msgstr "제거하다"
 
-#: usr/local/bin/voidbr-webapps:85
+#: usr/local/bin/voidbr-webapps:96
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "선택한 WebApp을 제거하고 시스템에서 해당 바로가기를 삭제합니다."
 
-#: usr/local/bin/voidbr-webapps:88 usr/local/bin/voidbr-webapps:183
+#: usr/local/bin/voidbr-webapps:100 usr/local/bin/voidbr-webapps:211
 msgid "Gerar Atalho"
 msgstr "바로가기 생성"
 
-#: usr/local/bin/voidbr-webapps:91
+#: usr/local/bin/voidbr-webapps:104
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "선택한 WebApp 바로가기 파일을 수동으로 재생성"
 
-#: usr/local/bin/voidbr-webapps:96
+#: usr/local/bin/voidbr-webapps:110
+msgid "Sobre"
+msgstr "~에"
+
+#: usr/local/bin/voidbr-webapps:114
+msgid "Ver informações, desenvolvedores e créditos do projeto"
+msgstr "프로젝트 정보, 개발자, 크레딧 보기"
+
+#: usr/local/bin/voidbr-webapps:118
 msgid "Sair"
 msgstr "외출하다"
 
-#: usr/local/bin/voidbr-webapps:99
+#: usr/local/bin/voidbr-webapps:121
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "VoidBR WebApps 관리자를 닫습니다."
 
-#: usr/local/bin/voidbr-webapps:181
+#: usr/local/bin/voidbr-webapps:209
 msgid "Executar"
 msgstr "실행하려면"
 
-#: usr/local/bin/voidbr-webapps:182
+#: usr/local/bin/voidbr-webapps:210
 msgid "Editar"
 msgstr "편집하다"
 
-#: usr/local/bin/voidbr-webapps:233
+#: usr/local/bin/voidbr-webapps:272
 msgid "Novo WebApp"
 msgstr "새로운 웹앱"
 
-#: usr/local/bin/voidbr-webapps:241
+#: usr/local/bin/voidbr-webapps:292
 msgid "Nome do App"
 msgstr "앱 이름"
 
-#: usr/local/bin/voidbr-webapps:243 usr/local/bin/voidbr-webapps:291
+#: usr/local/bin/voidbr-webapps:294 usr/local/bin/voidbr-webapps:360
 msgid "URL:"
 msgstr "URL:"
 
-#: usr/local/bin/voidbr-webapps:245 usr/local/bin/voidbr-webapps:293
+#: usr/local/bin/voidbr-webapps:296 usr/local/bin/voidbr-webapps:362
 msgid "Nome:"
 msgstr "이름:"
 
-#: usr/local/bin/voidbr-webapps:251 usr/local/bin/voidbr-webapps:299
+#: usr/local/bin/voidbr-webapps:304 usr/local/bin/voidbr-webapps:370
 msgid "Cancelar"
 msgstr "취소"
 
-#: usr/local/bin/voidbr-webapps:254 usr/local/bin/voidbr-webapps:302
+#: usr/local/bin/voidbr-webapps:307 usr/local/bin/voidbr-webapps:373
 msgid "Salvar"
 msgstr "구하다"
 
-#: usr/local/bin/voidbr-webapps:281
+#: usr/local/bin/voidbr-webapps:338
 msgid "Editar WebApp"
 msgstr "웹앱 편집"
+
+#: usr/local/bin/voidbr-webapps:522
+msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
+msgstr "VoidBR 생태계의 공식 WebApps 관리자입니다."
+
+#: usr/local/bin/voidbr-webapps:524
+msgid "Website do Projeto"
+msgstr "프로젝트 웹사이트"

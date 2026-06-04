@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-04 14:12-0400\n"
-"PO-Revision-Date: 2026-06-04 14:12-0400\n"
+"POT-Creation-Date: 2026-06-04 14:25-0400\n"
+"PO-Revision-Date: 2026-06-04 14:25-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,70 +14,86 @@ msgstr ""
 "Language: zh_TW\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:76
+#: usr/local/bin/voidbr-webapps:84
 msgid "Adicionar"
 msgstr "添加"
 
-#: usr/local/bin/voidbr-webapps:79
+#: usr/local/bin/voidbr-webapps:88
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "新增新的WebApp並自動產生其捷徑"
 
-#: usr/local/bin/voidbr-webapps:82 usr/local/bin/voidbr-webapps:184
+#: usr/local/bin/voidbr-webapps:92 usr/local/bin/voidbr-webapps:212
 msgid "Remover"
 msgstr "去除劑"
 
-#: usr/local/bin/voidbr-webapps:85
+#: usr/local/bin/voidbr-webapps:96
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "刪除選定的 WebApp 並從系統中刪除其捷徑"
 
-#: usr/local/bin/voidbr-webapps:88 usr/local/bin/voidbr-webapps:183
+#: usr/local/bin/voidbr-webapps:100 usr/local/bin/voidbr-webapps:211
 msgid "Gerar Atalho"
 msgstr "產生快捷方式"
 
-#: usr/local/bin/voidbr-webapps:91
+#: usr/local/bin/voidbr-webapps:104
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "手動重新產生選定的WebApp捷徑文件"
 
-#: usr/local/bin/voidbr-webapps:96
+#: usr/local/bin/voidbr-webapps:110
+msgid "Sobre"
+msgstr "在"
+
+#: usr/local/bin/voidbr-webapps:114
+msgid "Ver informações, desenvolvedores e créditos do projeto"
+msgstr "查看專案資訊、開發人員和製作人員"
+
+#: usr/local/bin/voidbr-webapps:118
 msgid "Sair"
 msgstr "出去"
 
-#: usr/local/bin/voidbr-webapps:99
+#: usr/local/bin/voidbr-webapps:121
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "關閉 VoidBR WebApps 管理器"
 
-#: usr/local/bin/voidbr-webapps:181
+#: usr/local/bin/voidbr-webapps:209
 msgid "Executar"
 msgstr "執行"
 
-#: usr/local/bin/voidbr-webapps:182
+#: usr/local/bin/voidbr-webapps:210
 msgid "Editar"
 msgstr "編輯"
 
-#: usr/local/bin/voidbr-webapps:233
+#: usr/local/bin/voidbr-webapps:272
 msgid "Novo WebApp"
 msgstr "新的網頁應用程式"
 
-#: usr/local/bin/voidbr-webapps:241
+#: usr/local/bin/voidbr-webapps:292
 msgid "Nome do App"
 msgstr "應用程式名稱"
 
-#: usr/local/bin/voidbr-webapps:243 usr/local/bin/voidbr-webapps:291
+#: usr/local/bin/voidbr-webapps:294 usr/local/bin/voidbr-webapps:360
 msgid "URL:"
 msgstr "網址："
 
-#: usr/local/bin/voidbr-webapps:245 usr/local/bin/voidbr-webapps:293
+#: usr/local/bin/voidbr-webapps:296 usr/local/bin/voidbr-webapps:362
 msgid "Nome:"
 msgstr "姓名："
 
-#: usr/local/bin/voidbr-webapps:251 usr/local/bin/voidbr-webapps:299
+#: usr/local/bin/voidbr-webapps:304 usr/local/bin/voidbr-webapps:370
 msgid "Cancelar"
 msgstr "取消"
 
-#: usr/local/bin/voidbr-webapps:254 usr/local/bin/voidbr-webapps:302
+#: usr/local/bin/voidbr-webapps:307 usr/local/bin/voidbr-webapps:373
 msgid "Salvar"
 msgstr "節省"
 
-#: usr/local/bin/voidbr-webapps:281
+#: usr/local/bin/voidbr-webapps:338
 msgid "Editar WebApp"
 msgstr "Editar WebApp"
+
+#: usr/local/bin/voidbr-webapps:522
+msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
+msgstr "VoidBR 生態系的官方 WebApps 管理器。"
+
+#: usr/local/bin/voidbr-webapps:524
+msgid "Website do Projeto"
+msgstr "專案網站"
