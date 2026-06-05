@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-04 14:25-0400\n"
-"PO-Revision-Date: 2026-06-04 14:25-0400\n"
+"POT-Creation-Date: 2026-06-05 13:06-0400\n"
+"PO-Revision-Date: 2026-06-05 13:06-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,86 +14,106 @@ msgstr ""
 "Language: ja\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:84
+#: usr/local/bin/voidbr-webapps:128
 msgid "Adicionar"
 msgstr "追加するには"
 
-#: usr/local/bin/voidbr-webapps:88
+#: usr/local/bin/voidbr-webapps:132
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "新しい WebApp を追加し、そのショートカットを自動的に生成します"
 
-#: usr/local/bin/voidbr-webapps:92 usr/local/bin/voidbr-webapps:212
+#: usr/local/bin/voidbr-webapps:136 usr/local/bin/voidbr-webapps:257
 msgid "Remover"
 msgstr "取り除く"
 
-#: usr/local/bin/voidbr-webapps:96
+#: usr/local/bin/voidbr-webapps:140
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "選択した WebApp を削除し、そのショートカットをシステムから削除します"
 
-#: usr/local/bin/voidbr-webapps:100 usr/local/bin/voidbr-webapps:211
+#: usr/local/bin/voidbr-webapps:144 usr/local/bin/voidbr-webapps:256
 msgid "Gerar Atalho"
 msgstr "ショートカットの生成"
 
-#: usr/local/bin/voidbr-webapps:104
+#: usr/local/bin/voidbr-webapps:148
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "選択した WebApp ショートカット ファイルを手動で再生成します"
 
-#: usr/local/bin/voidbr-webapps:110
+#: usr/local/bin/voidbr-webapps:154
 msgid "Sobre"
 msgstr "の上"
 
-#: usr/local/bin/voidbr-webapps:114
+#: usr/local/bin/voidbr-webapps:158
 msgid "Ver informações, desenvolvedores e créditos do projeto"
 msgstr "プロジェクト情報、開発者、クレジットを表示する"
 
-#: usr/local/bin/voidbr-webapps:118
+#: usr/local/bin/voidbr-webapps:162
 msgid "Sair"
 msgstr "外出する"
 
-#: usr/local/bin/voidbr-webapps:121
+#: usr/local/bin/voidbr-webapps:165
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "VoidBR WebApps マネージャーを閉じます"
 
-#: usr/local/bin/voidbr-webapps:209
+#: usr/local/bin/voidbr-webapps:254
 msgid "Executar"
 msgstr "実行するには"
 
-#: usr/local/bin/voidbr-webapps:210
+#: usr/local/bin/voidbr-webapps:255
 msgid "Editar"
 msgstr "編集"
 
-#: usr/local/bin/voidbr-webapps:272
+#: usr/local/bin/voidbr-webapps:293
+msgid "Navegador Padrão do Sistema (xdg-open)"
+msgstr "システムのデフォルトブラウザ (xdg-open)"
+
+#: usr/local/bin/voidbr-webapps:373
 msgid "Novo WebApp"
 msgstr "新しいウェブアプリ"
 
-#: usr/local/bin/voidbr-webapps:292
+#: usr/local/bin/voidbr-webapps:393
 msgid "Nome do App"
 msgstr "アプリ名"
 
-#: usr/local/bin/voidbr-webapps:294 usr/local/bin/voidbr-webapps:360
+#: usr/local/bin/voidbr-webapps:401 usr/local/bin/voidbr-webapps:505
 msgid "URL:"
 msgstr "URL:"
 
-#: usr/local/bin/voidbr-webapps:296 usr/local/bin/voidbr-webapps:362
+#: usr/local/bin/voidbr-webapps:405 usr/local/bin/voidbr-webapps:509
 msgid "Nome:"
 msgstr "名前："
 
-#: usr/local/bin/voidbr-webapps:304 usr/local/bin/voidbr-webapps:370
+#: usr/local/bin/voidbr-webapps:409 usr/local/bin/voidbr-webapps:513
+msgid "Navegador:"
+msgstr "ブラウザ："
+
+#: usr/local/bin/voidbr-webapps:420 usr/local/bin/voidbr-webapps:524
 msgid "Cancelar"
 msgstr "キャンセル"
 
-#: usr/local/bin/voidbr-webapps:307 usr/local/bin/voidbr-webapps:373
+#: usr/local/bin/voidbr-webapps:423 usr/local/bin/voidbr-webapps:527
 msgid "Salvar"
 msgstr "保存"
 
-#: usr/local/bin/voidbr-webapps:338
+#: usr/local/bin/voidbr-webapps:436 usr/local/bin/voidbr-webapps:540
+msgid "O campo nome é obrigatório."
+msgstr "名前フィールドは必須です。"
+
+#: usr/local/bin/voidbr-webapps:440 usr/local/bin/voidbr-webapps:544
+msgid "O campo URL é obrigatório."
+msgstr "URL フィールドは必須です。"
+
+#: usr/local/bin/voidbr-webapps:448 usr/local/bin/voidbr-webapps:552
+msgid "URL inválida. Use um formato como: https://exemplo.com"
+msgstr "URLが無効です。 https://exemplo.com のような形式を使用します。"
+
+#: usr/local/bin/voidbr-webapps:477
 msgid "Editar WebApp"
 msgstr "Web アプリの編集"
 
-#: usr/local/bin/voidbr-webapps:522
+#: usr/local/bin/voidbr-webapps:709
 msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
 msgstr "VoidBR エコシステムの公式 WebApps マネージャー。"
 
-#: usr/local/bin/voidbr-webapps:524
+#: usr/local/bin/voidbr-webapps:711
 msgid "Website do Projeto"
 msgstr "プロジェクトのウェブサイト"
