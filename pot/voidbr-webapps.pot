@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-04 14:25-0400\n"
-"PO-Revision-Date: 2026-06-04 14:25-0400\n"
+"POT-Creation-Date: 2026-06-05 16:43-0400\n"
+"PO-Revision-Date: 2026-06-05 16:43-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,86 +14,142 @@ msgstr ""
 "Language: none\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:84
+#: usr/local/bin/voidbr-webapps:155
 msgid "Adicionar"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:88
+#: usr/local/bin/voidbr-webapps:158
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:92 usr/local/bin/voidbr-webapps:212
+#: usr/local/bin/voidbr-webapps:161 usr/local/bin/voidbr-webapps:325
 msgid "Remover"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:96
+#: usr/local/bin/voidbr-webapps:164
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:100 usr/local/bin/voidbr-webapps:211
+#: usr/local/bin/voidbr-webapps:167 usr/local/bin/voidbr-webapps:324
 msgid "Gerar Atalho"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:104
+#: usr/local/bin/voidbr-webapps:170
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:110
+#: usr/local/bin/voidbr-webapps:175
 msgid "Sobre"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:114
+#: usr/local/bin/voidbr-webapps:178
 msgid "Ver informações, desenvolvedores e créditos do projeto"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:118
+#: usr/local/bin/voidbr-webapps:181
 msgid "Sair"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:121
+#: usr/local/bin/voidbr-webapps:184
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:209
+#: usr/local/bin/voidbr-webapps:242
+msgid "Aplicativo"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:255
+msgid "Navegador"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:268
+msgid "URL"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:322
 msgid "Executar"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:210
+#: usr/local/bin/voidbr-webapps:323
 msgid "Editar"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:272
+#: usr/local/bin/voidbr-webapps:359
+msgid "Navegador Padrão do Sistema (xdg-open)"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:453
+msgid "Imagens (*.png, *.jpg, *.svg)"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:459
+msgid "Selecionar Ícone Personalizado"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:466
+msgid "Buscando ícone do site..."
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:495
+msgid "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:501
 msgid "Novo WebApp"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:292
+#: usr/local/bin/voidbr-webapps:509
 msgid "Nome do App"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:294 usr/local/bin/voidbr-webapps:360
+#: usr/local/bin/voidbr-webapps:517 usr/local/bin/voidbr-webapps:657
 msgid "URL:"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:296 usr/local/bin/voidbr-webapps:362
+#: usr/local/bin/voidbr-webapps:521 usr/local/bin/voidbr-webapps:661
 msgid "Nome:"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:304 usr/local/bin/voidbr-webapps:370
+#: usr/local/bin/voidbr-webapps:525 usr/local/bin/voidbr-webapps:665
+msgid "Navegador:"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:528 usr/local/bin/voidbr-webapps:668
+msgid "Ícone:"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:537 usr/local/bin/voidbr-webapps:681
+msgid "Escolher Ícone..."
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:578 usr/local/bin/voidbr-webapps:723
 msgid "Cancelar"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:307 usr/local/bin/voidbr-webapps:373
+#: usr/local/bin/voidbr-webapps:581 usr/local/bin/voidbr-webapps:726
 msgid "Salvar"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:338
+#: usr/local/bin/voidbr-webapps:594 usr/local/bin/voidbr-webapps:739
+msgid "O campo nome é obrigatório."
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:598 usr/local/bin/voidbr-webapps:743
+msgid "O campo URL é obrigatório."
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:605 usr/local/bin/voidbr-webapps:750
+msgid "URL inválida. Use um formato como: https://exemplo.com"
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:641
 msgid "Editar WebApp"
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:522
+#: usr/local/bin/voidbr-webapps:886
 msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:524
+#: usr/local/bin/voidbr-webapps:888
 msgid "Website do Projeto"
 msgstr ""
