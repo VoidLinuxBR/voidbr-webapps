@@ -5,7 +5,7 @@ Name=VoidBR WebApps
 GenericName=Gerenciador de WebApps
 Comment=Aplicativo para gerenciar e criar webapps
 Exec=/usr/local/bin/voidbr-webapps
-Icon=voidbr
+Icon=voidbr-webapps
 Categories=System;Utility;VoidBR WebApps;X-VoidBR-Apps;
 DesktopNames=VoidBRWebApps
 
