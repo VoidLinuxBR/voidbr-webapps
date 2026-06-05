@@ -12,7 +12,7 @@ os.environ["G_MESSAGES_TO_CONSOLE"] = "none"
 os.environ["G_MESSAGES_DEBUG"] = "none"
 
 # Redireciona mensagens residuais de erro de baixo nível para o limbo
-sys.stderr = open(os.devnull, "w")
+sys.stderr = open(os.devnull, 'w')
 
 import json
 import re
@@ -24,12 +24,11 @@ import shutil
 import gettext
 
 import gi
-
 gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib
 
-__version__ = "1.3.9.8"
+__version__ = "1.3.9.6"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -56,7 +55,6 @@ CSS_DATA = b"""
 .error-text { color: #c01c28; font-size: 11px; margin-top: 2px; }
 """
 
-
 class WebAppManager(Gtk.Application):
     def __init__(self):
         super().__init__(application_id="org.voidlinux.VoidBR.WebApps")
@@ -64,7 +62,6 @@ class WebAppManager(Gtk.Application):
     def do_activate(self):
         self.win = MainWindow(self)
         self.win.present()
-
 
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
@@ -76,20 +73,16 @@ class MainWindow(Gtk.ApplicationWindow):
         provider = Gtk.CssProvider()
         provider.load_from_data(CSS_DATA)
         Gtk.StyleContext.add_provider_for_display(
-            Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            Gdk.Display.get_default(),
+            provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
         self.apps = self.load_apps()
         self.setup_actions()
 
-        main_box = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=10,
-            margin_top=15,
-            margin_bottom=15,
-            margin_start=15,
-            margin_end=15,
-        )
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, 
+                           margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
         self.set_child(main_box)
 
         toolbar = Gtk.Box(spacing=10, hexpand=True)
@@ -98,25 +91,19 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_add = Gtk.Button(label=_("Adicionar"))
         btn_add.set_icon_name("list-add-symbolic")
         btn_add.add_css_class("suggested-action")
-        btn_add.set_tooltip_text(
-            _("Adicionar um novo WebApp e gerar seu atalho automaticamente")
-        )
+        btn_add.set_tooltip_text(_("Adicionar um novo WebApp e gerar seu atalho automaticamente"))
         btn_add.connect("clicked", self.on_add)
 
         btn_remove = Gtk.Button(label=_("Remover"))
         btn_remove.set_icon_name("user-trash-symbolic")
         btn_remove.add_css_class("destructive-action")
-        btn_remove.set_tooltip_text(
-            _("Remover o WebApp selecionado e apagar seu atalho do sistema")
-        )
+        btn_remove.set_tooltip_text(_("Remover o WebApp selecionado e apagar seu atalho do sistema"))
         btn_remove.connect("clicked", self.on_remove)
 
         btn_generate = Gtk.Button(label=_("Gerar Atalho"))
         btn_generate.set_icon_name("emblem-system-symbolic")
         btn_generate.add_css_class("btn-generate")
-        btn_generate.set_tooltip_text(
-            _("Regerar manualmente o arquivo de atalho do WebApp selecionado")
-        )
+        btn_generate.set_tooltip_text(_("Regerar manualmente o arquivo de atalho do WebApp selecionado"))
         btn_generate.connect("clicked", self.on_generate)
 
         spacer = Gtk.Box(hexpand=True)
@@ -124,9 +111,7 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_about = Gtk.Button(label=_("Sobre"))
         btn_about.set_icon_name("help-about-symbolic")
         btn_about.add_css_class("btn-about")
-        btn_about.set_tooltip_text(
-            _("Ver informações, desenvolvedores e créditos do projeto")
-        )
+        btn_about.set_tooltip_text(_("Ver informações, desenvolvedores e créditos do projeto"))
         btn_about.connect("clicked", self.on_about)
 
         btn_exit = Gtk.Button(label=_("Sair"))
@@ -144,10 +129,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.store = Gtk.StringList()
         self.selection = Gtk.SingleSelection(model=self.store)
-        self.listview = Gtk.ListView(
-            model=self.selection, factory=self.create_factory()
-        )
-
+        self.listview = Gtk.ListView(model=self.selection, factory=self.create_factory())
+        
         self.listview.connect("activate", self.on_item_activated)
 
         scroll = Gtk.ScrolledWindow(hexpand=True, vexpand=True)
@@ -158,10 +141,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def setup_actions(self):
         act_run = Gio.SimpleAction.new("run-app", None)
-        act_run.connect(
-            "activate",
-            lambda a, p: self.on_item_activated(None, self.selection.get_selected()),
-        )
+        act_run.connect("activate", lambda a, p: self.on_item_activated(None, self.selection.get_selected()))
         self.add_action(act_run)
 
         act_edit = Gio.SimpleAction.new("edit-app", None)
@@ -200,13 +180,12 @@ class MainWindow(Gtk.ApplicationWindow):
         box = item.get_child()
         icon_widget = box.get_first_child()
         label_widget = box.get_last_child()
-
+        
         position = item.get_position()
         if position < len(self.apps):
             app = self.apps[position]
-            browser_label = app.get("browser", "default")
-            label_widget.set_text(f"{app['name']} ({browser_label})  →  {app['url']}")
-
+            label_widget.set_text(f"{app['name']}  →  {app['url']}")
+            
             icon_path = app.get("icon")
             if icon_path and os.path.exists(icon_path):
                 icon_widget.set_from_file(icon_path)
@@ -228,132 +207,64 @@ class MainWindow(Gtk.ApplicationWindow):
 
         popover = Gtk.PopoverMenu.new_from_model(menu)
         popover.set_parent(item.get_child())
-
+        
         rect = Gdk.Rectangle()
         rect.x, rect.y, rect.width, rect.height = int(x), int(y), 1, 1
         popover.set_pointing_to(rect)
         popover.popup()
 
-    def _resolve_browser_exec(self, b_id):
-        """Retorna o binário real do navegador se encontrado através das variações de nome comuns"""
-        variants = {
-            "chromium": ["chromium"],
-            "google-chrome-stable": ["google-chrome-stable", "google-chrome"],
-            "brave-browser": ["brave-browser", "brave"],
-            "firefox": ["firefox"],
-            "microsoft-edge": ["microsoft-edge", "microsoft-edge-stable"],
-            "vivaldi": ["vivaldi", "vivaldi-stable"],
-        }
-        if b_id in variants:
-            for variant in variants[b_id]:
-                if shutil.which(variant):
-                    return variant
+    def _get_browser_exec(self):
+        browsers = ["chromium", "google-chrome-stable", "google-chrome", "brave-browser", "microsoft-edge", "vivaldi"]
+        for b in browsers:
+            if shutil.which(b):
+                return b
         return None
 
-    def _get_installed_browsers(self):
-        """Retorna dicionário mapeando ID estável para Nome amigável dos navegadores atualmente presentes"""
-        supported = {
-            "chromium": "Chromium",
-            "google-chrome-stable": "Google Chrome",
-            "brave-browser": "Brave Browser",
-            "firefox": "Mozilla Firefox",
-            "microsoft-edge": "Microsoft Edge",
-            "vivaldi": "Vivaldi",
-        }
-        installed = {"default": _("Navegador Padrão do Sistema (xdg-open)")}
-        for b_id, b_name in supported.items():
-            if self._resolve_browser_exec(b_id) is not None:
-                installed[b_id] = b_name
-        return installed
-
     def on_item_activated(self, listview, position):
-        if position == Gtk.INVALID_LIST_POSITION or position >= len(self.apps):
-            return
+        if position == Gtk.INVALID_LIST_POSITION or position >= len(self.apps): return
         app = self.apps[position]
-        url = app["url"]
-        browser_choice = app.get("browser", "default")
-
+        url = app['url']
+        
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
 
-        exec_binary = (
-            self._resolve_browser_exec(browser_choice)
-            if browser_choice != "default"
-            else None
-        )
-
-        if not exec_binary:
-            subprocess.Popen(["xdg-open", url])
-        elif browser_choice == "firefox":
-            subprocess.Popen([exec_binary, "--new-window", url])
+        browser = self._get_browser_exec()
+        if browser:
+            subprocess.Popen([browser, f"--app={url}"])
         else:
-            subprocess.Popen([exec_binary, f"--app={url}"])
+            subprocess.Popen(["xdg-open", url])
 
     def refresh(self):
         while self.store.get_n_items():
             self.store.remove(0)
         for app in self.apps:
-            browser_label = app.get("browser", "default")
-            self.store.append(f"{app['name']} ({browser_label})  →  {app['url']}")
+            self.store.append(f"{app['name']}  →  {app['url']}")
 
     def load_apps(self):
-        if not JSON_FILE.exists():
-            return []
+        if not JSON_FILE.exists(): return []
         try:
             with open(JSON_FILE, encoding="utf-8") as f:
-                data = json.load(f)
-                for app in data:
-                    if "browser" not in app:
-                        app["browser"] = "default"
-                return data
-        except:
-            return []
+                return json.load(f)
+        except: return []
 
     def save_apps(self):
         with open(JSON_FILE, "w", encoding="utf-8") as f:
             json.dump(self.apps, f, indent=2, ensure_ascii=False)
 
     def is_valid_url(self, url):
+        """Valida se a estrutura possui um domínio com extensão válida (ex: teste.com, teste.com.br)"""
         regex = re.compile(
-            r"^(?:http|ftp)s?://"
-            r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"
-            r"localhost|"
-            r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"
-            r"(?::\d+)?"
-            r"(?:/?|[/?]\S+)$",
-            re.IGNORECASE,
-        )
+            r'^(?:http|ftp)s?://' # http:// ou https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' # domínio obrigatório (ex: .com)
+            r'localhost|' # localhost
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # IP
+            r'(?::\d+)?' # porta
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         return re.match(regex, url) is not None
 
-    def _build_browser_combo(self, active_id="default"):
-        combo = Gtk.ComboBoxText()
-        browsers = self._get_installed_browsers()
-
-        if active_id not in browsers:
-            browsers[active_id] = active_id
-
-        for b_id, b_name in browsers.items():
-            combo.append(b_id, b_name)
-
-        combo.set_active_id(active_id)
-        return combo
-
     def on_add(self, button):
-        dialog = Gtk.Window(
-            title=_("Novo WebApp"),
-            transient_for=self,
-            modal=True,
-            default_width=440,
-            destroy_with_parent=True,
-        )
-        main_layout = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=10,
-            margin_top=15,
-            margin_bottom=15,
-            margin_start=15,
-            margin_end=15,
-        )
+        dialog = Gtk.Window(title=_("Novo WebApp"), transient_for=self, modal=True, default_width=420, destroy_with_parent=True)
+        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
         dialog.set_child(main_layout)
 
         grid = Gtk.Grid(row_spacing=5, column_spacing=10)
@@ -361,7 +272,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         url_entry = Gtk.Entry(placeholder_text="https://exemplo.com", hexpand=True)
         name_entry = Gtk.Entry(placeholder_text=_("Nome do App"), hexpand=True)
-        browser_combo = self._build_browser_combo("default")
 
         url_error_label = Gtk.Label(xalign=0)
         url_error_label.add_css_class("error-text")
@@ -376,15 +286,7 @@ class MainWindow(Gtk.ApplicationWindow):
         grid.attach(name_entry, 1, 2, 1, 1)
         grid.attach(name_error_label, 1, 3, 1, 1)
 
-        grid.attach(Gtk.Label(label=_("Navegador:"), xalign=1), 0, 4, 1, 1)
-        grid.attach(browser_combo, 1, 4, 1, 1)
-
-        button_box = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            spacing=10,
-            halign=Gtk.Align.END,
-            margin_top=10,
-        )
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END, margin_top=10)
         main_layout.append(button_box)
 
         btn_cancel = Gtk.Button(label=_("Cancelar"))
@@ -392,12 +294,12 @@ class MainWindow(Gtk.ApplicationWindow):
 
         btn_save = Gtk.Button(label=_("Salvar"))
         btn_save.add_css_class("suggested-action")
-
+        
         def save_clicked(b):
             name = name_entry.get_text().strip()
             url = url_entry.get_text().strip()
-            browser = browser_combo.get_active_id()
-
+            
+            # Resetar mensagens anteriores
             name_error_label.set_text("")
             url_error_label.set_text("")
             has_error = False
@@ -414,22 +316,18 @@ class MainWindow(Gtk.ApplicationWindow):
                     url = "https://" + url
 
                 if not self.is_valid_url(url):
-                    url_error_label.set_text(
-                        _("URL inválida. Use um formato como: https://exemplo.com")
-                    )
+                    url_error_label.set_text(_("URL inválida. Use um formato como: https://exemplo.com"))
                     has_error = True
 
             if has_error:
                 return
 
-            new_app = {"name": name, "url": url, "icon": "", "browser": browser}
+            new_app = {"name": name, "url": url, "icon": ""}
             self.apps.append(new_app)
             self.save_apps()
             self.refresh()
-
-            threading.Thread(
-                target=self.download_favicon, args=(new_app, url), daemon=True
-            ).start()
+            
+            threading.Thread(target=self.download_favicon, args=(new_app, url), daemon=True).start()
             dialog.close()
 
         btn_save.connect("clicked", save_clicked)
@@ -439,25 +337,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_edit(self):
         pos = self.selection.get_selected()
-        if pos == Gtk.INVALID_LIST_POSITION:
-            return
+        if pos == Gtk.INVALID_LIST_POSITION: return
         app = self.apps[pos]
 
-        dialog = Gtk.Window(
-            title=_("Editar WebApp"),
-            transient_for=self,
-            modal=True,
-            default_width=440,
-            destroy_with_parent=True,
-        )
-        main_layout = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=10,
-            margin_top=15,
-            margin_bottom=15,
-            margin_start=15,
-            margin_end=15,
-        )
+        dialog = Gtk.Window(title=_("Editar WebApp"), transient_for=self, modal=True, default_width=420, destroy_with_parent=True)
+        main_layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_top=15, margin_bottom=15, margin_start=15, margin_end=15)
         dialog.set_child(main_layout)
 
         grid = Gtk.Grid(row_spacing=5, column_spacing=10)
@@ -465,7 +349,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         url_entry = Gtk.Entry(text=app["url"], hexpand=True)
         name_entry = Gtk.Entry(text=app["name"], hexpand=True)
-        browser_combo = self._build_browser_combo(app.get("browser", "default"))
 
         url_error_label = Gtk.Label(xalign=0)
         url_error_label.add_css_class("error-text")
@@ -480,15 +363,7 @@ class MainWindow(Gtk.ApplicationWindow):
         grid.attach(name_entry, 1, 2, 1, 1)
         grid.attach(name_error_label, 1, 3, 1, 1)
 
-        grid.attach(Gtk.Label(label=_("Navegador:"), xalign=1), 0, 4, 1, 1)
-        grid.attach(browser_combo, 1, 4, 1, 1)
-
-        button_box = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            spacing=10,
-            halign=Gtk.Align.END,
-            margin_top=10,
-        )
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END, margin_top=10)
         main_layout.append(button_box)
 
         btn_cancel = Gtk.Button(label=_("Cancelar"))
@@ -496,12 +371,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
         btn_save = Gtk.Button(label=_("Salvar"))
         btn_save.add_css_class("suggested-action")
-
+        
         def save_clicked(b):
             name = name_entry.get_text().strip()
             url = url_entry.get_text().strip()
-            browser = browser_combo.get_active_id()
-
+            
             name_error_label.set_text("")
             url_error_label.set_text("")
             has_error = False
@@ -518,9 +392,7 @@ class MainWindow(Gtk.ApplicationWindow):
                     url = "https://" + url
 
                 if not self.is_valid_url(url):
-                    url_error_label.set_text(
-                        _("URL inválida. Use um formato como: https://exemplo.com")
-                    )
+                    url_error_label.set_text(_("URL inválida. Use um formato como: https://exemplo.com"))
                     has_error = True
 
             if has_error:
@@ -528,21 +400,16 @@ class MainWindow(Gtk.ApplicationWindow):
 
             if url != app["url"]:
                 if app.get("icon") and os.path.exists(app["icon"]):
-                    try:
-                        os.remove(app["icon"])
-                    except:
-                        pass
+                    try: os.remove(app["icon"])
+                    except: pass
                 app["icon"] = ""
-                threading.Thread(
-                    target=self.download_favicon, args=(app, url), daemon=True
-                ).start()
-
+                threading.Thread(target=self.download_favicon, args=(app, url), daemon=True).start()
+            
             app["name"] = name
             app["url"] = url
-            app["browser"] = browser
             self.save_apps()
             self.refresh()
-
+            
             self.generate_desktop_file(app)
             dialog.close()
 
@@ -554,21 +421,16 @@ class MainWindow(Gtk.ApplicationWindow):
     def download_favicon(self, app_dict, url):
         try:
             domain = url.replace("https://", "").replace("http://", "").split("/")[0]
-            if not domain:
-                return
-            clean_name = re.sub(
-                r"[^a-zA-Z0-9_-]", "", app_dict["name"].lower().replace(" ", "-")
-            )
+            if not domain: return
+            clean_name = re.sub(r'[^a-zA-Z0-9_-]', '', app_dict['name'].lower().replace(' ', '-'))
             icon_path = ICONS_DIR / f"{clean_name}.png"
             favicon_url = f"https://www.google.com/s2/favicons?sz=64&domain={domain}"
-            req = urllib.request.Request(
-                favicon_url, headers={"User-Agent": "Mozilla/5.0"}
-            )
+            req = urllib.request.Request(favicon_url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=5) as response:
-                with open(icon_path, "wb") as f:
+                with open(icon_path, 'wb') as f:
                     f.write(response.read())
             app_dict["icon"] = str(icon_path)
-
+            
             self.generate_desktop_file(app_dict)
             GLib.idle_add(self.save_and_refresh_ui)
         except Exception as e:
@@ -585,23 +447,14 @@ class MainWindow(Gtk.ApplicationWindow):
         if pos != Gtk.INVALID_LIST_POSITION:
             app = self.apps[pos]
             if app.get("icon") and os.path.exists(app["icon"]):
-                try:
-                    os.remove(app["icon"])
-                except:
-                    pass
-
-            clean_name = re.sub(
-                r"[^a-zA-Z0-9_-]", "", app["name"].lower().replace(" ", "-")
-            )
-            desktop_file = (
-                Path.home()
-                / f".local/share/applications/voidbr-webapp-{clean_name}.desktop"
-            )
+                try: os.remove(app["icon"])
+                except: pass
+                
+            clean_name = re.sub(r'[^a-zA-Z0-9_-]', '', app['name'].lower().replace(' ', '-'))
+            desktop_file = Path.home() / f".local/share/applications/voidbr-webapp-{clean_name}.desktop"
             if desktop_file.exists():
-                try:
-                    os.remove(desktop_file)
-                except:
-                    pass
+                try: os.remove(desktop_file)
+                except: pass
 
             del self.apps[pos]
             self.save_apps()
@@ -611,33 +464,19 @@ class MainWindow(Gtk.ApplicationWindow):
         desktop_dir = Path.home() / ".local/share/applications"
         desktop_dir.mkdir(parents=True, exist_ok=True)
 
-        clean_name = re.sub(
-            r"[^a-zA-Z0-9_-]", "", app["name"].lower().replace(" ", "-")
-        )
+        clean_name = re.sub(r'[^a-zA-Z0-9_-]', '', app['name'].lower().replace(' ', '-'))
         filename = desktop_dir / f"voidbr-webapp-{clean_name}.desktop"
 
-        icon_to_use = (
-            app.get("icon")
-            if (app.get("icon") and os.path.exists(app["icon"]))
-            else "web-browser"
-        )
-        url = app["url"]
+        icon_to_use = app.get("icon") if (app.get("icon") and os.path.exists(app["icon"])) else "web-browser"
+        url = app['url']
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
 
-        browser_choice = app.get("browser", "default")
-        exec_binary = (
-            self._resolve_browser_exec(browser_choice)
-            if browser_choice != "default"
-            else None
-        )
-
-        if not exec_binary:
-            exec_command = f'xdg-open "{url}"'
-        elif browser_choice == "firefox":
-            exec_command = f'{exec_binary} --new-window "{url}"'
+        browser = self._get_browser_exec()
+        if browser:
+            exec_command = f'{browser} --app="{url}"'
         else:
-            exec_command = f'{exec_binary} --app="{url}"'
+            exec_command = f'xdg-open "{url}"'
 
         desktop = f"""[Desktop Entry]
 Type=Application
@@ -650,21 +489,15 @@ Categories=Network;X-VoidBR-WebApps;
         with open(filename, "w", encoding="utf-8") as f:
             f.write(desktop)
         os.chmod(filename, 0o755)
-
+        
         try:
-            subprocess.run(
-                ["xdg-desktop-menu", "forceupdate"],
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
+            subprocess.run(["xdg-desktop-menu", "forceupdate"], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception:
             pass
 
     def on_generate(self, button):
         pos = self.selection.get_selected()
-        if pos == Gtk.INVALID_LIST_POSITION:
-            return
+        if pos == Gtk.INVALID_LIST_POSITION: return
         self.generate_desktop_file(self.apps[pos])
         print(f"Atalho para {self.apps[pos]['name']} regerado manualmente.")
 
@@ -682,12 +515,11 @@ Categories=Network;X-VoidBR-WebApps;
             authors=["Vilmar Catafesta <vcatafesta@gmail.com>"],
             artists=[
                 "Vilmar Catafesta <vcatafesta@gmail.com>",
-                "Eduardo Charquero <eduardocharquero@gmail.com>",
-            ],
+                "Eduardo Charquero <eduardocharquero@gmail.com>"
+            ]
         )
         about.set_logo_icon_name("voidbr")
         about.present()
-
 
 if __name__ == "__main__":
     app = WebAppManager()
