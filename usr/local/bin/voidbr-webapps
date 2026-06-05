@@ -645,7 +645,7 @@ Name={app['name']}
 Exec={exec_command}
 Icon={icon_to_use}
 Terminal=false
-Categories=Network;X-VoidBR-WebApps;
+Categories=X-VoidBR-WebApps;
 """
         with open(filename, "w", encoding="utf-8") as f:
             f.write(desktop)
