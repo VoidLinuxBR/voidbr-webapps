@@ -12,7 +12,7 @@ url="https://github.com/voidlinuxbr/${pkgname}"
 source=("git+${url}.git")
 md5sums=('SKIP')
 makedepends=()
-depends=(python3 python3-gobject gtk4 libadwaita)
+depends=(python3 python-gobject gtk4 libadwaita)
 
 package() {
 	# Verify default folder
