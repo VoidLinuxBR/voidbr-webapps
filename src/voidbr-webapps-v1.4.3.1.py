@@ -4,7 +4,7 @@
 #   voidbr-webapps
 #   Created: sex 05 jun 2026 13:02:13 -04
 #   Altered: sex 05 jun 2026 13:02:13 -04
-#   Updated: sex 05 jun 2026 16:24:00 -04
+#   Updated: sex 05 jun 2026 19:20:00 -04
 #
 #   Copyright (c) 2019-2026, Vilmar Catafesta <vcatafesta@gmail.com>
 #   Copyright (c) 2019-2026, ChiliLinux Development Team <https://chililinux.com> <https://github.com/chililinux>
@@ -59,9 +59,9 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 
-from gi.repository import Gtk, Gdk, Gio, GLib
+from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.3.9.9"
+__version__ = "1.4.3.1"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -76,18 +76,59 @@ APP_DIR.mkdir(parents=True, exist_ok=True)
 ICONS_DIR.mkdir(parents=True, exist_ok=True)
 
 JSON_FILE = APP_DIR / "webapps.json"
+CONFIG_FILE = APP_DIR / "config.json"
 
 CSS_DATA = b"""
 .btn-add { color: white; background-color: #26a269; }
 .btn-remove { color: white; background-color: #c01c28; }
 .btn-generate { color: black; background-color: #f5c211; }
+.btn-config { color: black; background-color: #e1e1e1; }
 .btn-about { color: black; background-color: #e1e1e1; }
 .btn-exit { color: white; background-color: #e01b24; }
 .success-icon { color: #26a269; margin-right: 8px; }
 .app-icon { margin-right: 8px; }
 .error-text { color: #c01c28; font-size: 11px; margin-top: 2px; }
 .preview-icon { border: 1px solid #ccc; padding: 2px; border-radius: 4px; background-color: #fafafa; }
+columnview { background-color: @theme_bg_color; }
+
+/* Estilos de densidade vertical controlados dinamicamente */
+.view-comfortable row { padding: 8px 4px; }
+.view-compact row { padding: 1px 4px; }
 """
+
+
+class WebAppItem(GObject.Object):
+    """Objeto customizado para encapsular os dados de cada WebApp na Gtk.ColumnView"""
+
+    __gtype_name__ = "WebAppItem"
+
+    def __init__(self, name, browser, url, icon, index):
+        super().__init__()
+        self._name = name
+        self._browser = browser
+        self._url = url
+        self._icon = icon
+        self._index = index
+
+    @GObject.Property(type=str)
+    def name(self):
+        return self._name
+
+    @GObject.Property(type=str)
+    def browser(self):
+        return self._browser
+
+    @GObject.Property(type=str)
+    def url(self):
+        return self._url
+
+    @GObject.Property(type=str)
+    def icon(self):
+        return self._icon
+
+    @GObject.Property(type=int)
+    def index(self):
+        return self._index
 
 
 class WebAppManager(Gtk.Application):
@@ -104,7 +145,7 @@ class MainWindow(Gtk.ApplicationWindow):
         super().__init__(application=app)
 
         self.set_title(f"VoidBR WebApps - v{__version__}")
-        self.set_default_size(900, 500)
+        self.set_default_size(950, 500)
 
         provider = Gtk.CssProvider()
         provider.load_from_data(CSS_DATA)
@@ -112,6 +153,7 @@ class MainWindow(Gtk.ApplicationWindow):
             Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
+        self.config = self.load_config()
         self.apps = self.load_apps()
         self.setup_actions()
 
@@ -154,6 +196,12 @@ class MainWindow(Gtk.ApplicationWindow):
 
         spacer = Gtk.Box(hexpand=True)
 
+        btn_config = Gtk.Button()
+        btn_config.set_icon_name("preferences-system-symbolic")
+        btn_config.add_css_class("btn-config")
+        btn_config.set_tooltip_text(_("Configurações do Aplicativo"))
+        btn_config.connect("clicked", self.on_open_config)
+
         btn_about = Gtk.Button(label=_("Sobre"))
         btn_about.set_icon_name("help-about-symbolic")
         btn_about.add_css_class("btn-about")
@@ -172,29 +220,41 @@ class MainWindow(Gtk.ApplicationWindow):
         toolbar.append(btn_remove)
         toolbar.append(btn_generate)
         toolbar.append(spacer)
+        toolbar.append(btn_config)
         toolbar.append(btn_about)
         toolbar.append(btn_exit)
 
-        self.store = Gtk.StringList()
-        self.selection = Gtk.SingleSelection(model=self.store)
-        self.listview = Gtk.ListView(
-            model=self.selection, factory=self.create_factory()
-        )
+        # Configuração do Modelo de Dados ListStore e Ordenação
+        self.store = Gio.ListStore.new(WebAppItem)
 
-        self.listview.connect("activate", self.on_item_activated)
+        self.sort_model = Gtk.SortListModel(model=self.store)
+        self.selection = Gtk.SingleSelection(model=self.sort_model)
+
+        # Criação da ColumnView (Tabela)
+        self.columnview = Gtk.ColumnView(model=self.selection)
+        self.columnview.set_hexpand(True)
+        self.columnview.set_vexpand(True)
+
+        self.columnview.connect("activate", self.on_item_activated_view)
+
+        # Vincular gerenciador de ordenação nativa da ColumnView
+        self.sort_model.set_sorter(self.columnview.get_sorter())
+
+        # Aplicar densidade inicial baseada nas configurações salvas
+        self.update_list_density_css()
+
+        # Construção das Colunas
+        self.setup_columns()
 
         scroll = Gtk.ScrolledWindow(hexpand=True, vexpand=True)
-        scroll.set_child(self.listview)
+        scroll.set_child(self.columnview)
         main_box.append(scroll)
 
         self.refresh()
 
     def setup_actions(self):
         act_run = Gio.SimpleAction.new("run-app", None)
-        act_run.connect(
-            "activate",
-            lambda a, p: self.on_item_activated(None, self.selection.get_selected()),
-        )
+        act_run.connect("activate", lambda a, p: self.on_menu_action("run"))
         self.add_action(act_run)
 
         act_edit = Gio.SimpleAction.new("edit-app", None)
@@ -209,14 +269,58 @@ class MainWindow(Gtk.ApplicationWindow):
         act_rem.connect("activate", lambda a, p: self.on_remove(None))
         self.add_action(act_rem)
 
-    def create_factory(self):
-        factory = Gtk.SignalListItemFactory()
-        factory.connect("setup", self.factory_setup)
-        factory.connect("bind", self.factory_bind)
-        return factory
+    def setup_columns(self):
+        # --- Coluna 1: Aplicativo (Ícone + Nome) ---
+        factory_name = Gtk.SignalListItemFactory()
+        factory_name.connect("setup", self.on_setup_name_column)
+        factory_name.connect("bind", self.on_bind_name_column)
 
-    def factory_setup(self, factory, item):
-        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        col_name = Gtk.ColumnViewColumn(title=_("Aplicativo"), factory=factory_name)
+        col_name.set_expand(True)
+
+        sorter_name = Gtk.StringSorter.new()
+        sorter_name.set_expression(Gtk.PropertyExpression.new(WebAppItem, None, "name"))
+        col_name.set_sorter(sorter_name)
+        self.columnview.append_column(col_name)
+
+        # --- Coluna 2: Navegador ---
+        factory_browser = Gtk.SignalListItemFactory()
+        factory_browser.connect(
+            "setup", lambda f, i: i.set_child(Gtk.Label(xalign=0, margin_start=6))
+        )
+        factory_browser.connect("bind", self.on_bind_browser_column)
+
+        col_browser = Gtk.ColumnViewColumn(
+            title=_("Navegador"), factory=factory_browser
+        )
+        col_browser.set_fixed_width(220)
+
+        sorter_browser = Gtk.StringSorter.new()
+        sorter_browser.set_expression(
+            Gtk.PropertyExpression.new(WebAppItem, None, "browser")
+        )
+        col_browser.set_sorter(sorter_browser)
+        self.columnview.append_column(col_browser)
+
+        # --- Coluna 3: URL ---
+        factory_url = Gtk.SignalListItemFactory()
+        factory_url.connect(
+            "setup", lambda f, i: i.set_child(Gtk.Label(xalign=0, margin_start=6))
+        )
+        factory_url.connect("bind", self.on_bind_url_column)
+
+        col_url = Gtk.ColumnViewColumn(title=_("URL"), factory=factory_url)
+        col_url.set_expand(True)
+
+        sorter_url = Gtk.StringSorter.new()
+        sorter_url.set_expression(Gtk.PropertyExpression.new(WebAppItem, None, "url"))
+        col_url.set_sorter(sorter_url)
+        self.columnview.append_column(col_url)
+
+    # --- Handlers de ciclo de vida das fábricas de células da ColumnView ---
+
+    def on_setup_name_column(self, factory, item):
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, margin_start=6)
         icon = Gtk.Image()
         icon.add_css_class("app-icon")
         label = Gtk.Label(xalign=0)
@@ -229,29 +333,37 @@ class MainWindow(Gtk.ApplicationWindow):
         gesture.connect("pressed", self.on_row_right_clicked, item)
         box.add_controller(gesture)
 
-    def factory_bind(self, factory, item):
+    def on_bind_name_column(self, factory, item):
         box = item.get_child()
         icon_widget = box.get_first_child()
         label_widget = box.get_last_child()
 
-        position = item.get_position()
-        if position < len(self.apps):
-            app = self.apps[position]
-            browser_label = app.get("browser", "default")
-            label_widget.set_text(f"{app['name']} ({browser_label})  →  {app['url']}")
+        obj = item.get_item()
+        label_widget.set_text(obj.name)
 
-            icon_path = app.get("icon")
-            if icon_path and os.path.exists(icon_path):
-                icon_widget.set_from_file(icon_path)
-                icon_widget.set_pixel_size(24)
-                icon_widget.remove_css_class("success-icon")
-            else:
-                icon_widget.set_from_icon_name("web-browser")
-                icon_widget.remove_css_class("success-icon")
+        icon_size = 16 if self.config.get("density", "comfortable") == "compact" else 24
+
+        if obj.icon and os.path.exists(obj.icon):
+            icon_widget.set_from_file(obj.icon)
+            icon_widget.set_pixel_size(icon_size)
+        else:
+            icon_widget.set_from_icon_name("web-browser")
+            icon_widget.set_pixel_size(icon_size)
+
+    def on_bind_browser_column(self, factory, item):
+        label = item.get_child()
+        obj = item.get_item()
+        browsers_map = self._get_installed_browsers()
+        friendly_name = browsers_map.get(obj.browser, obj.browser)
+        label.set_text(friendly_name)
+
+    def on_bind_url_column(self, factory, item):
+        label = item.get_child()
+        obj = item.get_item()
+        label.set_text(obj.url)
 
     def on_row_right_clicked(self, gesture, n_press, x, y, item):
-        position = item.get_position()
-        self.selection.set_selected(position)
+        self.selection.set_selected(item.get_position())
 
         menu = Gio.Menu.new()
         menu.append(_("Executar"), "win.run-app")
@@ -268,7 +380,6 @@ class MainWindow(Gtk.ApplicationWindow):
         popover.popup()
 
     def _resolve_browser_exec(self, b_id):
-        """Retorna o binário real do navegador se encontrado através das variações de nome comuns"""
         variants = {
             "chromium": ["chromium"],
             "google-chrome-stable": ["google-chrome-stable", "google-chrome"],
@@ -284,7 +395,6 @@ class MainWindow(Gtk.ApplicationWindow):
         return None
 
     def _get_installed_browsers(self):
-        """Retorna dicionário mapeando ID estável para Nome amigável dos navegadores atualmente presentes"""
         supported = {
             "chromium": "Chromium",
             "google-chrome-stable": "Google Chrome",
@@ -299,12 +409,26 @@ class MainWindow(Gtk.ApplicationWindow):
                 installed[b_id] = b_name
         return installed
 
-    def on_item_activated(self, listview, position):
-        if position == Gtk.INVALID_LIST_POSITION or position >= len(self.apps):
+    def _get_selected_app_and_index(self):
+        pos = self.selection.get_selected()
+        if pos == Gtk.INVALID_LIST_POSITION:
+            return None, -1
+        obj = self.sort_model.get_item(pos)
+        if obj and obj.index < len(self.apps):
+            return self.apps[obj.index], obj.index
+        return None, -1
+
+    def on_item_activated_view(self, view, position):
+        if position == Gtk.INVALID_LIST_POSITION:
             return
-        app = self.apps[position]
+        obj = self.sort_model.get_item(position)
+        if not obj or obj.index >= len(self.apps):
+            return
+
+        app = self.apps[obj.index]
         url = app["url"]
         browser_choice = app.get("browser", "default")
+        window_mode = app.get("window_mode", self.config.get("window_mode", True))
 
         if not url.startswith(("http://", "https://")):
             url = "https://" + url
@@ -318,16 +442,67 @@ class MainWindow(Gtk.ApplicationWindow):
         if not exec_binary:
             subprocess.Popen(["xdg-open", url])
         elif browser_choice == "firefox":
-            subprocess.Popen([exec_binary, "--new-window", url])
+            if window_mode:
+                subprocess.Popen([exec_binary, "--new-window", url])
+            else:
+                subprocess.Popen([exec_binary, url])
         else:
-            subprocess.Popen([exec_binary, f"--app={url}"])
+            if window_mode:
+                subprocess.Popen([exec_binary, f"--app={url}"])
+            else:
+                subprocess.Popen([exec_binary, url])
+
+    def on_menu_action(self, action_type):
+        pos = self.selection.get_selected()
+        if pos != Gtk.INVALID_LIST_POSITION:
+            self.on_item_activated_view(None, pos)
+
+    def update_list_density_css(self):
+        density = self.config.get("density", "comfortable")
+        if density == "compact":
+            self.columnview.remove_css_class("view-comfortable")
+            self.columnview.add_css_class("view-compact")
+        else:
+            self.columnview.remove_css_class("view-compact")
+            self.columnview.add_css_class("view-comfortable")
 
     def refresh(self):
-        while self.store.get_n_items():
-            self.store.remove(0)
-        for app in self.apps:
+        self.store.remove_all()
+        for idx, app in enumerate(self.apps):
             browser_label = app.get("browser", "default")
-            self.store.append(f"{app['name']} ({browser_label})  →  {app['url']}")
+            item_obj = WebAppItem(
+                name=app["name"],
+                browser=browser_label,
+                url=app["url"],
+                icon=app.get("icon", ""),
+                index=idx,
+            )
+            self.store.append(item_obj)
+
+    def load_config(self):
+        default_config = {
+            "density": "compact",
+            "default_browser": "default",
+            "default_category": "",
+            "favicon_size": "64",
+            "window_mode": True,
+        }
+        if not CONFIG_FILE.exists():
+            return default_config
+        try:
+            with open(CONFIG_FILE, encoding="utf-8") as f:
+                data = json.load(f)
+                # Garante chaves retrocompatíveis respeitando o que o usuário salvou
+                for k, v in default_config.items():
+                    if k not in data:
+                        data[k] = v
+                return data
+        except:
+            return default_config
+
+    def save_config(self):
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(self.config, f, indent=2, ensure_ascii=False)
 
     def load_apps(self):
         if not JSON_FILE.exists():
@@ -358,16 +533,20 @@ class MainWindow(Gtk.ApplicationWindow):
         )
         return re.match(regex, url) is not None
 
+    def _suggest_name_from_url(self, url_text):
+        if not url_text:
+            return ""
+        domain = re.sub(r"^(https?://)?(www\.)?", "", url_text, flags=re.IGNORECASE)
+        domain = re.split(r"[./]", domain)[0]
+        return domain.capitalize()
+
     def _build_browser_combo(self, active_id="default"):
         combo = Gtk.ComboBoxText()
         browsers = self._get_installed_browsers()
-
         if active_id not in browsers:
             browsers[active_id] = active_id
-
         for b_id, b_name in browsers.items():
             combo.append(b_id, b_name)
-
         combo.set_active_id(active_id)
         return combo
 
@@ -386,7 +565,6 @@ class MainWindow(Gtk.ApplicationWindow):
     def _async_fetch_favicon_preview(
         self, url, preview_widget, status_widget, dialog_obj
     ):
-        """Busca o favicon da URL em segundo plano e atualiza o estado e imagem da janela"""
         if not url or "." not in url:
             return
         if not url.startswith(("http://", "https://")):
@@ -401,8 +579,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 )
                 if not domain:
                     raise ValueError()
+                size = self.config.get("favicon_size", "64")
                 favicon_url = (
-                    f"https://www.google.com/s2/favicons?sz=64&domain={domain}"
+                    f"https://www.google.com/s2/favicons?sz={size}&domain={domain}"
                 )
                 req = urllib.request.Request(
                     favicon_url, headers={"User-Agent": "Mozilla/5.0"}
@@ -419,7 +598,7 @@ class MainWindow(Gtk.ApplicationWindow):
                         preview_widget.set_from_file(str(cache_path))
                         dialog_obj.selected_custom_icon = str(cache_path)
                         dialog_obj.is_url_favicon = True
-                        status_widget.set_text("")  # Limpa o erro se der sucesso
+                        status_widget.set_text("")
 
                 GLib.idle_add(update_ui)
             except Exception:
@@ -438,6 +617,143 @@ class MainWindow(Gtk.ApplicationWindow):
                 GLib.idle_add(update_ui_error)
 
         threading.Thread(target=worker, daemon=True).start()
+
+    def on_open_config(self, button):
+        dialog = Gtk.Window(
+            title=_("Configurações"),
+            transient_for=self,
+            modal=True,
+            default_width=450,
+            destroy_with_parent=True,
+        )
+        main_layout = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=15,
+            margin_top=15,
+            margin_bottom=15,
+            margin_start=15,
+            margin_end=15,
+        )
+        dialog.set_child(main_layout)
+
+        notebook = Gtk.Notebook()
+        main_layout.append(notebook)
+
+        # --- ABA 1: INTERFACE ---
+        tab_interface = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=12,
+            margin_top=10,
+            margin_bottom=10,
+            margin_start=10,
+            margin_end=10,
+        )
+        grid_ui = Gtk.Grid(row_spacing=12, column_spacing=10)
+        tab_interface.append(grid_ui)
+
+        grid_ui.attach(Gtk.Label(label=_("Densidade da Lista:"), xalign=1), 0, 0, 1, 1)
+        density_combo = Gtk.ComboBoxText()
+        density_combo.append("comfortable", _("Confortável (Larga)"))
+        density_combo.append("compact", _("Compacto (Estreita)"))
+        density_combo.set_active_id(self.config.get("density", "comfortable"))
+        grid_ui.attach(density_combo, 1, 0, 1, 1)
+
+        notebook.append_page(tab_interface, Gtk.Label(label=_("Interface")))
+
+        # --- ABA 2: PADRÕES DE CRIAÇÃO ---
+        tab_defaults = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=12,
+            margin_top=10,
+            margin_bottom=10,
+            margin_start=10,
+            margin_end=10,
+        )
+        grid_def = Gtk.Grid(row_spacing=12, column_spacing=10)
+        tab_defaults.append(grid_def)
+
+        # Navegador padrão global
+        grid_def.attach(Gtk.Label(label=_("Navegador Padrão:"), xalign=1), 0, 0, 1, 1)
+        browser_def_combo = self._build_browser_combo(
+            self.config.get("default_browser", "default")
+        )
+        grid_def.attach(browser_def_combo, 1, 0, 1, 1)
+
+        # Categoria Padrão Opcional do Menu (X-VoidBR-WebApps é interna)
+        grid_def.attach(
+            Gtk.Label(label=_("Categorias Adicionais:"), xalign=1), 0, 1, 1, 1
+        )
+        category_combo = Gtk.ComboBoxText()
+        category_combo.append("", _("Nenhuma (Apenas X-VoidBR-WebApps)"))
+        category_combo.append("Network;WebBrowser;", _("Internet / Navegadores"))
+        category_combo.append("Development;", _("Desenvolvimento"))
+        category_combo.append("Office;", _("Escritório"))
+        category_combo.append("Graphics;", _("Gráficos"))
+        category_combo.append("Game;", _("Jogos"))
+
+        current_cat = self.config.get("default_category", "")
+        valid_cats = [
+            "",
+            "Network;WebBrowser;",
+            "Development;",
+            "Office;",
+            "Graphics;",
+            "Game;",
+        ]
+        category_combo.set_active_id(current_cat if current_cat in valid_cats else "")
+        grid_def.attach(category_combo, 1, 1, 1, 1)
+
+        # Tamanho do Favicon
+        grid_def.attach(Gtk.Label(label=_("Resolução do Ícone:"), xalign=1), 0, 2, 1, 1)
+        favicon_combo = Gtk.ComboBoxText()
+        favicon_combo.append("32", "32x32 px")
+        favicon_combo.append("64", "64x64 px (Recomendado)")
+        favicon_combo.append("128", "128x128 px (HiDPI)")
+        favicon_combo.set_active_id(self.config.get("favicon_size", "64"))
+        grid_def.attach(favicon_combo, 1, 2, 1, 1)
+
+        # Modo Janela Isolada (Switch)
+        grid_def.attach(
+            Gtk.Label(label=_("Modo Janela Isolada:"), xalign=1), 0, 3, 1, 1
+        )
+        window_switch = Gtk.Switch()
+        window_switch.set_active(self.config.get("window_mode", True))
+        window_switch.set_halign(Gtk.Align.START)
+        grid_def.attach(window_switch, 1, 3, 1, 1)
+
+        notebook.append_page(tab_defaults, Gtk.Label(label=_("Padrões de Criação")))
+
+        # --- BOTÕES DE AÇÃO ---
+        button_box = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=10,
+            halign=Gtk.Align.END,
+            margin_top=10,
+        )
+        main_layout.append(button_box)
+
+        btn_cancel = Gtk.Button(label=_("Cancelar"))
+        btn_cancel.connect("clicked", lambda b: dialog.close())
+
+        btn_save = Gtk.Button(label=_("Salvar"))
+        btn_save.add_css_class("suggested-action")
+
+        def on_save_config_clicked(b):
+            self.config["density"] = density_combo.get_active_id()
+            self.config["default_browser"] = browser_def_combo.get_active_id()
+            self.config["default_category"] = category_combo.get_active_id()
+            self.config["favicon_size"] = favicon_combo.get_active_id()
+            self.config["window_mode"] = window_switch.get_active()
+
+            self.save_config()
+            self.update_list_density_css()
+            self.refresh()
+            dialog.close()
+
+        btn_save.connect("clicked", on_save_config_clicked)
+        button_box.append(btn_cancel)
+        button_box.append(btn_save)
+        dialog.present()
 
     def on_add(self, button):
         dialog = Gtk.Window(
@@ -462,7 +778,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
         url_entry = Gtk.Entry(placeholder_text="https://exemplo.com", hexpand=True)
         name_entry = Gtk.Entry(placeholder_text=_("Nome do App"), hexpand=True)
-        browser_combo = self._build_browser_combo("default")
+
+        # Carrega o navegador sugerido nas configurações padrão globais
+        browser_combo = self._build_browser_combo(
+            self.config.get("default_browser", "default")
+        )
 
         url_error_label = Gtk.Label(xalign=0)
         url_error_label.add_css_class("error-text")
@@ -480,7 +800,6 @@ class MainWindow(Gtk.ApplicationWindow):
         grid.attach(Gtk.Label(label=_("Navegador:"), xalign=1), 0, 4, 1, 1)
         grid.attach(browser_combo, 1, 4, 1, 1)
 
-        # Seletor de Ícone
         grid.attach(Gtk.Label(label=_("Ícone:"), xalign=1), 0, 5, 1, 1)
         icon_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         grid.attach(icon_box, 1, 5, 1, 1)
@@ -494,7 +813,6 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_browse.set_icon_name("folder-open-symbolic")
         icon_box.append(btn_browse)
 
-        # Label para status/erros de carregamento de ícone da URL
         icon_status_label = Gtk.Label(xalign=0)
         icon_status_label.add_css_class("error-text")
         grid.attach(icon_status_label, 1, 6, 1, 1)
@@ -509,6 +827,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 self._async_fetch_favicon_preview(
                     url_text, preview_img, icon_status_label, dialog
                 )
+                if not name_entry.get_text().strip():
+                    suggestion = self._suggest_name_from_url(url_text)
+                    name_entry.set_text(suggestion)
 
         focus_controller = Gtk.EventControllerFocus.new()
         focus_controller.connect("leave", lambda c: on_url_changed(url_entry))
@@ -577,7 +898,15 @@ class MainWindow(Gtk.ApplicationWindow):
             if has_error:
                 return
 
-            new_app = {"name": name, "url": url, "icon": "", "browser": browser}
+            # herda o modo de janela e categoria padrão ativos no momento da criação
+            new_app = {
+                "name": name,
+                "url": url,
+                "icon": "",
+                "browser": browser,
+                "window_mode": self.config.get("window_mode", True),
+                "category": self.config.get("default_category", ""),
+            }
             clean_name = re.sub(r"[^a-zA-Z0-9_-]", "", name.lower().replace(" ", "-"))
 
             if dialog.selected_custom_icon and os.path.exists(
@@ -614,10 +943,9 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.present()
 
     def on_edit(self):
-        pos = self.selection.get_selected()
-        if pos == Gtk.INVALID_LIST_POSITION:
+        app, idx = self._get_selected_app_and_index()
+        if not app:
             return
-        app = self.apps[pos]
 
         dialog = Gtk.Window(
             title=_("Editar WebApp"),
@@ -659,7 +987,6 @@ class MainWindow(Gtk.ApplicationWindow):
         grid.attach(Gtk.Label(label=_("Navegador:"), xalign=1), 0, 4, 1, 1)
         grid.attach(browser_combo, 1, 4, 1, 1)
 
-        # Linha do Ícone no Editar
         grid.attach(Gtk.Label(label=_("Ícone:"), xalign=1), 0, 5, 1, 1)
         icon_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         grid.attach(icon_box, 1, 5, 1, 1)
@@ -677,7 +1004,6 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_browse.set_icon_name("folder-open-symbolic")
         icon_box.append(btn_browse)
 
-        # Label para status/erros de carregamento de ícone da URL
         icon_status_label = Gtk.Label(xalign=0)
         icon_status_label.add_css_class("error-text")
         grid.attach(icon_status_label, 1, 6, 1, 1)
@@ -695,6 +1021,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 self._async_fetch_favicon_preview(
                     url_text, preview_img, icon_status_label, dialog
                 )
+                if not name_entry.get_text().strip():
+                    suggestion = self._suggest_name_from_url(url_text)
+                    name_entry.set_text(suggestion)
 
         focus_controller = Gtk.EventControllerFocus.new()
         focus_controller.connect("leave", lambda c: on_url_changed(url_entry))
@@ -828,7 +1157,10 @@ class MainWindow(Gtk.ApplicationWindow):
                 r"[^a-zA-Z0-9_-]", "", app_dict["name"].lower().replace(" ", "-")
             )
             icon_path = ICONS_DIR / f"{clean_name}.png"
-            favicon_url = f"https://www.google.com/s2/favicons?sz=64&domain={domain}"
+            size = self.config.get("favicon_size", "64")
+            favicon_url = (
+                f"https://www.google.com/s2/favicons?sz={size}&domain={domain}"
+            )
             req = urllib.request.Request(
                 favicon_url, headers={"User-Agent": "Mozilla/5.0"}
             )
@@ -849,9 +1181,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.refresh()
 
     def on_remove(self, button):
-        pos = self.selection.get_selected()
-        if pos != Gtk.INVALID_LIST_POSITION:
-            app = self.apps[pos]
+        app, idx = self._get_selected_app_and_index()
+        if idx != -1 and app:
             if app.get("icon") and os.path.exists(app["icon"]):
                 try:
                     os.remove(app["icon"])
@@ -871,7 +1202,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 except:
                     pass
 
-            del self.apps[pos]
+            del self.apps[idx]
             self.save_apps()
             self.refresh()
 
@@ -894,6 +1225,8 @@ class MainWindow(Gtk.ApplicationWindow):
             url = "https://" + url
 
         browser_choice = app.get("browser", "default")
+        window_mode = app.get("window_mode", self.config.get("window_mode", True))
+
         exec_binary = (
             self._resolve_browser_exec(browser_choice)
             if browser_choice != "default"
@@ -903,9 +1236,27 @@ class MainWindow(Gtk.ApplicationWindow):
         if not exec_binary:
             exec_command = f'xdg-open "{url}"'
         elif browser_choice == "firefox":
-            exec_command = f'{exec_binary} --new-window "{url}"'
+            exec_command = (
+                f'{exec_binary} --new-window "{url}"'
+                if window_mode
+                else f'{exec_binary} "{url}"'
+            )
         else:
-            exec_command = f'{exec_binary} --app="{url}"'
+            exec_command = (
+                f'{exec_binary} --app="{url}"'
+                if window_mode
+                else f'{exec_binary} "{url}"'
+            )
+
+        # Garante X-VoidBR-WebApps de forma interna e concatena adicionais se houver
+        base_cat = app.get("category", self.config.get("default_category", ""))
+        if base_cat:
+            final_categories = f"X-VoidBR-WebApps;{base_cat}"
+        else:
+            final_categories = "X-VoidBR-WebApps;"
+
+        if not final_categories.endswith(";"):
+            final_categories += ";"
 
         desktop = f"""[Desktop Entry]
 Type=Application
@@ -913,7 +1264,7 @@ Name={app['name']}
 Exec={exec_command}
 Icon={icon_to_use}
 Terminal=false
-Categories=X-VoidBR-WebApps;
+Categories={final_categories}
 """
         with open(filename, "w", encoding="utf-8") as f:
             f.write(desktop)
@@ -930,11 +1281,12 @@ Categories=X-VoidBR-WebApps;
             pass
 
     def on_generate(self, button):
-        pos = self.selection.get_selected()
-        if pos == Gtk.INVALID_LIST_POSITION:
-            return
-        self.generate_desktop_file(self.apps[pos])
-        print(f"Atalho para {self.apps[pos]['name']} regerado manualmente.")
+        app, idx = self._get_selected_app_and_index()
+        if app:
+            self.generate_desktop_file(app)
+            print(
+                f"Atalho para {app['name']} regerado manualmente com as novas diretrizes."
+            )
 
     def on_about(self, button):
         about = Gtk.AboutDialog(
