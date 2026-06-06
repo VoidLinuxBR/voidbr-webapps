@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-06 00:37-0400\n"
-"PO-Revision-Date: 2026-06-06 00:37-0400\n"
+"POT-Creation-Date: 2026-06-06 14:59-0400\n"
+"PO-Revision-Date: 2026-06-06 14:59-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr "添加"
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "添加新的WebApp并自动生成其快捷方式"
 
-#: usr/local/bin/voidbr-webapps:182 usr/local/bin/voidbr-webapps:414
+#: usr/local/bin/voidbr-webapps:182 usr/local/bin/voidbr-webapps:409
 msgid "Remover"
 msgstr "去除剂"
 
@@ -30,7 +30,7 @@ msgstr "去除剂"
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "删除选定的 WebApp 并从系统中删除其快捷方式"
 
-#: usr/local/bin/voidbr-webapps:190 usr/local/bin/voidbr-webapps:413
+#: usr/local/bin/voidbr-webapps:190 usr/local/bin/voidbr-webapps:408
 msgid "Gerar Atalho"
 msgstr "生成快捷方式"
 
@@ -58,173 +58,164 @@ msgstr "出去"
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "关闭 VoidBR WebApps 管理器"
 
-#: usr/local/bin/voidbr-webapps:320
+#: usr/local/bin/voidbr-webapps:315
 msgid "Aplicativo"
 msgstr "应用"
 
-#: usr/local/bin/voidbr-webapps:336
+#: usr/local/bin/voidbr-webapps:331
 msgid "Navegador"
 msgstr "浏览器"
 
-#: usr/local/bin/voidbr-webapps:354
+#: usr/local/bin/voidbr-webapps:349
 msgid "URL"
 msgstr "网址"
 
-#: usr/local/bin/voidbr-webapps:411
+#: usr/local/bin/voidbr-webapps:406
 msgid "Executar"
 msgstr "执行"
 
-#: usr/local/bin/voidbr-webapps:412
+#: usr/local/bin/voidbr-webapps:407
 msgid "Editar"
 msgstr "编辑"
 
-#: usr/local/bin/voidbr-webapps:448
+#: usr/local/bin/voidbr-webapps:443
 msgid "Navegador Padrão do Sistema (xdg-open)"
 msgstr "系统默认浏览器（xdg-open）"
 
-#: usr/local/bin/voidbr-webapps:633
+#: usr/local/bin/voidbr-webapps:678 usr/local/bin/voidbr-webapps:725
+msgid ""
+"Todos os navegadores disponíveis já estão sendo utilizados para esta URL."
+msgstr ""
+
+#: usr/local/bin/voidbr-webapps:723
+msgid "🚫 Nenhum navegador disponível"
+msgstr "🚫 没有可用的浏览器"
+
+#: usr/local/bin/voidbr-webapps:750
 msgid "Imagens (*.png, *.jpg, *.svg)"
 msgstr "图片（*.png、*.jpg、*.svg）"
 
-#: usr/local/bin/voidbr-webapps:640
+#: usr/local/bin/voidbr-webapps:757
 msgid "Selecionar Ícone Personalizado"
 msgstr "选择自定义图标"
 
-#: usr/local/bin/voidbr-webapps:651
+#: usr/local/bin/voidbr-webapps:768
 msgid "Buscando ícone do site..."
 msgstr "正在搜索站点图标..."
 
-#: usr/local/bin/voidbr-webapps:691
+#: usr/local/bin/voidbr-webapps:808
 msgid "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
 msgstr "⚠️ 未找到 URL 图标。使用系统默认图标。"
 
-#: usr/local/bin/voidbr-webapps:701
+#: usr/local/bin/voidbr-webapps:818
 msgid "Configurações"
 msgstr "设置"
 
-#: usr/local/bin/voidbr-webapps:732
+#: usr/local/bin/voidbr-webapps:849
 msgid "Densidade da Lista:"
 msgstr "列表密度："
 
-#: usr/local/bin/voidbr-webapps:734
+#: usr/local/bin/voidbr-webapps:851
 msgid "Confortável (Larga)"
 msgstr "舒适（大）"
 
-#: usr/local/bin/voidbr-webapps:735
+#: usr/local/bin/voidbr-webapps:852
 msgid "Compacto (Estreita)"
 msgstr "紧凑（窄）"
 
-#: usr/local/bin/voidbr-webapps:739
+#: usr/local/bin/voidbr-webapps:856
 msgid "Interface"
 msgstr "界面"
 
-#: usr/local/bin/voidbr-webapps:754
+#: usr/local/bin/voidbr-webapps:871
 msgid "Navegador Padrão:"
 msgstr "Navegador Padrão:"
 
-#: usr/local/bin/voidbr-webapps:762
+#: usr/local/bin/voidbr-webapps:879
 msgid "Categorias Adicionais:"
 msgstr "其他类别："
 
-#: usr/local/bin/voidbr-webapps:765
+#: usr/local/bin/voidbr-webapps:882
 msgid "Nenhuma (Apenas X-VoidBR-WebApps)"
 msgstr "无（仅限 X-VoidBR-WebApps）"
 
-#: usr/local/bin/voidbr-webapps:766
+#: usr/local/bin/voidbr-webapps:883
 msgid "Internet / Navegadores"
 msgstr "互联网/浏览器"
 
-#: usr/local/bin/voidbr-webapps:767
+#: usr/local/bin/voidbr-webapps:884
 msgid "Desenvolvimento"
 msgstr "发展"
 
-#: usr/local/bin/voidbr-webapps:768
+#: usr/local/bin/voidbr-webapps:885
 msgid "Escritório"
 msgstr "桌子"
 
-#: usr/local/bin/voidbr-webapps:769
+#: usr/local/bin/voidbr-webapps:886
 msgid "Gráficos"
 msgstr "图形"
 
-#: usr/local/bin/voidbr-webapps:770
+#: usr/local/bin/voidbr-webapps:887
 msgid "Jogos"
 msgstr "游戏"
 
-#: usr/local/bin/voidbr-webapps:785
+#: usr/local/bin/voidbr-webapps:902
 msgid "Resolução do Ícone:"
 msgstr "图标分辨率："
 
-#: usr/local/bin/voidbr-webapps:795
+#: usr/local/bin/voidbr-webapps:912
 msgid "Modo Janela Isolada:"
 msgstr "隔离窗口模式："
 
-#: usr/local/bin/voidbr-webapps:802
+#: usr/local/bin/voidbr-webapps:919
 msgid "Padrões de Criação"
 msgstr "育种标准"
 
-#: usr/local/bin/voidbr-webapps:813 usr/local/bin/voidbr-webapps:973
-#: usr/local/bin/voidbr-webapps:1180
+#: usr/local/bin/voidbr-webapps:930 usr/local/bin/voidbr-webapps:1068
 msgid "Cancelar"
 msgstr "取消"
 
-#: usr/local/bin/voidbr-webapps:816 usr/local/bin/voidbr-webapps:976
-#: usr/local/bin/voidbr-webapps:1183
+#: usr/local/bin/voidbr-webapps:933 usr/local/bin/voidbr-webapps:1071
+#: usr/local/bin/voidbr-webapps:1191
 msgid "Salvar"
 msgstr "节省"
 
-#: usr/local/bin/voidbr-webapps:838
+#: usr/local/bin/voidbr-webapps:955
 msgid "Novo WebApp"
 msgstr "新的网络应用程序"
 
-#: usr/local/bin/voidbr-webapps:858
+#: usr/local/bin/voidbr-webapps:975
 msgid "Nome do App"
 msgstr "应用程序名称"
 
-#: usr/local/bin/voidbr-webapps:870 usr/local/bin/voidbr-webapps:1099
+#: usr/local/bin/voidbr-webapps:988 usr/local/bin/voidbr-webapps:1155
 msgid "URL:"
 msgstr "网址："
 
-#: usr/local/bin/voidbr-webapps:874 usr/local/bin/voidbr-webapps:1103
+#: usr/local/bin/voidbr-webapps:992 usr/local/bin/voidbr-webapps:1157
 msgid "Nome:"
 msgstr "姓名："
 
-#: usr/local/bin/voidbr-webapps:878 usr/local/bin/voidbr-webapps:1107
+#: usr/local/bin/voidbr-webapps:996 usr/local/bin/voidbr-webapps:1159
 msgid "Navegador:"
 msgstr "浏览器："
 
-#: usr/local/bin/voidbr-webapps:881 usr/local/bin/voidbr-webapps:1110
+#: usr/local/bin/voidbr-webapps:999
 msgid "Ícone:"
 msgstr "图标："
 
-#: usr/local/bin/voidbr-webapps:890 usr/local/bin/voidbr-webapps:1123
+#: usr/local/bin/voidbr-webapps:1008
 msgid "Escolher Ícone..."
 msgstr "选择图标..."
 
-#: usr/local/bin/voidbr-webapps:917 usr/local/bin/voidbr-webapps:1001
-#: usr/local/bin/voidbr-webapps:1208
-msgid "URL inválida. Use um formato como: https://exemplo.com"
-msgstr "无效网址。使用如下格式：https://exemplo.com"
-
-#: usr/local/bin/voidbr-webapps:926 usr/local/bin/voidbr-webapps:1017
-msgid "Já existe um WebApp com esta URL usando o mesmo navegador."
-msgstr "使用同一浏览器已存在具有此 URL 的 Web 应用程序。"
-
-#: usr/local/bin/voidbr-webapps:989 usr/local/bin/voidbr-webapps:1196
-msgid "O campo nome é obrigatório."
-msgstr "名称字段是必填字段。"
-
-#: usr/local/bin/voidbr-webapps:993 usr/local/bin/voidbr-webapps:1200
-msgid "O campo URL é obrigatório."
-msgstr "URL 字段是必填字段。"
-
-#: usr/local/bin/voidbr-webapps:1071
+#: usr/local/bin/voidbr-webapps:1126
 msgid "Editar WebApp"
 msgstr "编辑网络应用程序"
 
-#: usr/local/bin/voidbr-webapps:1411
+#: usr/local/bin/voidbr-webapps:1330
 msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
 msgstr "VoidBR 生态系统的官方 WebApps 管理器。"
 
-#: usr/local/bin/voidbr-webapps:1413
+#: usr/local/bin/voidbr-webapps:1332
 msgid "Website do Projeto"
 msgstr "项目网站"
