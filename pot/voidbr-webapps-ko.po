@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-05 16:43-0400\n"
-"PO-Revision-Date: 2026-06-05 16:43-0400\n"
+"POT-Creation-Date: 2026-06-06 00:37-0400\n"
+"PO-Revision-Date: 2026-06-06 00:37-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,142 +14,217 @@ msgstr ""
 "Language: ko\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:155
+#: usr/local/bin/voidbr-webapps:174
 msgid "Adicionar"
 msgstr "추가하려면"
 
-#: usr/local/bin/voidbr-webapps:158
+#: usr/local/bin/voidbr-webapps:178
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "새 WebApp을 추가하고 바로가기를 자동으로 생성합니다."
 
-#: usr/local/bin/voidbr-webapps:161 usr/local/bin/voidbr-webapps:325
+#: usr/local/bin/voidbr-webapps:182 usr/local/bin/voidbr-webapps:414
 msgid "Remover"
 msgstr "제거하다"
 
-#: usr/local/bin/voidbr-webapps:164
+#: usr/local/bin/voidbr-webapps:186
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "선택한 WebApp을 제거하고 시스템에서 해당 바로가기를 삭제합니다."
 
-#: usr/local/bin/voidbr-webapps:167 usr/local/bin/voidbr-webapps:324
+#: usr/local/bin/voidbr-webapps:190 usr/local/bin/voidbr-webapps:413
 msgid "Gerar Atalho"
 msgstr "바로가기 생성"
 
-#: usr/local/bin/voidbr-webapps:170
+#: usr/local/bin/voidbr-webapps:194
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "선택한 WebApp 바로가기 파일을 수동으로 재생성"
 
-#: usr/local/bin/voidbr-webapps:175
+#: usr/local/bin/voidbr-webapps:203
+msgid "Configurações do Aplicativo"
+msgstr "애플리케이션 설정"
+
+#: usr/local/bin/voidbr-webapps:206
 msgid "Sobre"
 msgstr "~에"
 
-#: usr/local/bin/voidbr-webapps:178
+#: usr/local/bin/voidbr-webapps:210
 msgid "Ver informações, desenvolvedores e créditos do projeto"
 msgstr "프로젝트 정보, 개발자, 크레딧 보기"
 
-#: usr/local/bin/voidbr-webapps:181
+#: usr/local/bin/voidbr-webapps:214
 msgid "Sair"
 msgstr "외출하다"
 
-#: usr/local/bin/voidbr-webapps:184
+#: usr/local/bin/voidbr-webapps:217
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "VoidBR WebApps 관리자를 닫습니다."
 
-#: usr/local/bin/voidbr-webapps:242
+#: usr/local/bin/voidbr-webapps:320
 msgid "Aplicativo"
 msgstr "애플리케이션"
 
-#: usr/local/bin/voidbr-webapps:255
+#: usr/local/bin/voidbr-webapps:336
 msgid "Navegador"
 msgstr "브라우저"
 
-#: usr/local/bin/voidbr-webapps:268
+#: usr/local/bin/voidbr-webapps:354
 msgid "URL"
 msgstr "URL"
 
-#: usr/local/bin/voidbr-webapps:322
+#: usr/local/bin/voidbr-webapps:411
 msgid "Executar"
 msgstr "실행하려면"
 
-#: usr/local/bin/voidbr-webapps:323
+#: usr/local/bin/voidbr-webapps:412
 msgid "Editar"
 msgstr "편집하다"
 
-#: usr/local/bin/voidbr-webapps:359
+#: usr/local/bin/voidbr-webapps:448
 msgid "Navegador Padrão do Sistema (xdg-open)"
 msgstr "시스템 기본 브라우저(xdg-open)"
 
-#: usr/local/bin/voidbr-webapps:453
+#: usr/local/bin/voidbr-webapps:633
 msgid "Imagens (*.png, *.jpg, *.svg)"
 msgstr "이미지(*.png, *.jpg, *.svg)"
 
-#: usr/local/bin/voidbr-webapps:459
+#: usr/local/bin/voidbr-webapps:640
 msgid "Selecionar Ícone Personalizado"
 msgstr "맞춤 아이콘 선택"
 
-#: usr/local/bin/voidbr-webapps:466
+#: usr/local/bin/voidbr-webapps:651
 msgid "Buscando ícone do site..."
 msgstr "사이트 아이콘 검색 중..."
 
-#: usr/local/bin/voidbr-webapps:495
+#: usr/local/bin/voidbr-webapps:691
 msgid "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
 msgstr "⚠️ URL 아이콘을 찾을 수 없습니다. 시스템 기본 아이콘을 사용합니다."
 
-#: usr/local/bin/voidbr-webapps:501
-msgid "Novo WebApp"
-msgstr "새로운 웹앱"
+#: usr/local/bin/voidbr-webapps:701
+msgid "Configurações"
+msgstr "설정"
 
-#: usr/local/bin/voidbr-webapps:509
-msgid "Nome do App"
-msgstr "앱 이름"
+#: usr/local/bin/voidbr-webapps:732
+msgid "Densidade da Lista:"
+msgstr "목록 밀도:"
 
-#: usr/local/bin/voidbr-webapps:517 usr/local/bin/voidbr-webapps:657
-msgid "URL:"
-msgstr "URL:"
+#: usr/local/bin/voidbr-webapps:734
+msgid "Confortável (Larga)"
+msgstr "편안함(대형)"
 
-#: usr/local/bin/voidbr-webapps:521 usr/local/bin/voidbr-webapps:661
-msgid "Nome:"
-msgstr "이름:"
+#: usr/local/bin/voidbr-webapps:735
+msgid "Compacto (Estreita)"
+msgstr "콤팩트(좁음)"
 
-#: usr/local/bin/voidbr-webapps:525 usr/local/bin/voidbr-webapps:665
-msgid "Navegador:"
-msgstr "브라우저:"
+#: usr/local/bin/voidbr-webapps:739
+msgid "Interface"
+msgstr "인터페이스"
 
-#: usr/local/bin/voidbr-webapps:528 usr/local/bin/voidbr-webapps:668
-msgid "Ícone:"
-msgstr "상:"
+#: usr/local/bin/voidbr-webapps:754
+msgid "Navegador Padrão:"
+msgstr "기본 브라우저:"
 
-#: usr/local/bin/voidbr-webapps:537 usr/local/bin/voidbr-webapps:681
-msgid "Escolher Ícone..."
-msgstr "아이콘을 선택하세요..."
+#: usr/local/bin/voidbr-webapps:762
+msgid "Categorias Adicionais:"
+msgstr "추가 카테고리:"
 
-#: usr/local/bin/voidbr-webapps:578 usr/local/bin/voidbr-webapps:723
+#: usr/local/bin/voidbr-webapps:765
+msgid "Nenhuma (Apenas X-VoidBR-WebApps)"
+msgstr "없음(X-VoidBR-WebApps만 해당)"
+
+#: usr/local/bin/voidbr-webapps:766
+msgid "Internet / Navegadores"
+msgstr "인터넷/브라우저"
+
+#: usr/local/bin/voidbr-webapps:767
+msgid "Desenvolvimento"
+msgstr "개발"
+
+#: usr/local/bin/voidbr-webapps:768
+msgid "Escritório"
+msgstr "책상"
+
+#: usr/local/bin/voidbr-webapps:769
+msgid "Gráficos"
+msgstr "제도법"
+
+#: usr/local/bin/voidbr-webapps:770
+msgid "Jogos"
+msgstr "계략"
+
+#: usr/local/bin/voidbr-webapps:785
+msgid "Resolução do Ícone:"
+msgstr "아이콘 해상도:"
+
+#: usr/local/bin/voidbr-webapps:795
+msgid "Modo Janela Isolada:"
+msgstr "격리된 창 모드:"
+
+#: usr/local/bin/voidbr-webapps:802
+msgid "Padrões de Criação"
+msgstr "사육기준"
+
+#: usr/local/bin/voidbr-webapps:813 usr/local/bin/voidbr-webapps:973
+#: usr/local/bin/voidbr-webapps:1180
 msgid "Cancelar"
 msgstr "취소"
 
-#: usr/local/bin/voidbr-webapps:581 usr/local/bin/voidbr-webapps:726
+#: usr/local/bin/voidbr-webapps:816 usr/local/bin/voidbr-webapps:976
+#: usr/local/bin/voidbr-webapps:1183
 msgid "Salvar"
 msgstr "구하다"
 
-#: usr/local/bin/voidbr-webapps:594 usr/local/bin/voidbr-webapps:739
-msgid "O campo nome é obrigatório."
-msgstr "이름 필드는 필수입니다."
+#: usr/local/bin/voidbr-webapps:838
+msgid "Novo WebApp"
+msgstr "새로운 웹앱"
 
-#: usr/local/bin/voidbr-webapps:598 usr/local/bin/voidbr-webapps:743
-msgid "O campo URL é obrigatório."
-msgstr "URL 필드는 필수입니다."
+#: usr/local/bin/voidbr-webapps:858
+msgid "Nome do App"
+msgstr "앱 이름"
 
-#: usr/local/bin/voidbr-webapps:605 usr/local/bin/voidbr-webapps:750
+#: usr/local/bin/voidbr-webapps:870 usr/local/bin/voidbr-webapps:1099
+msgid "URL:"
+msgstr "URL:"
+
+#: usr/local/bin/voidbr-webapps:874 usr/local/bin/voidbr-webapps:1103
+msgid "Nome:"
+msgstr "이름:"
+
+#: usr/local/bin/voidbr-webapps:878 usr/local/bin/voidbr-webapps:1107
+msgid "Navegador:"
+msgstr "브라우저:"
+
+#: usr/local/bin/voidbr-webapps:881 usr/local/bin/voidbr-webapps:1110
+msgid "Ícone:"
+msgstr "상:"
+
+#: usr/local/bin/voidbr-webapps:890 usr/local/bin/voidbr-webapps:1123
+msgid "Escolher Ícone..."
+msgstr "아이콘을 선택하세요..."
+
+#: usr/local/bin/voidbr-webapps:917 usr/local/bin/voidbr-webapps:1001
+#: usr/local/bin/voidbr-webapps:1208
 msgid "URL inválida. Use um formato como: https://exemplo.com"
 msgstr "URL이 잘못되었습니다. 다음과 같은 형식을 사용하세요: https://exemplo.com"
 
-#: usr/local/bin/voidbr-webapps:641
+#: usr/local/bin/voidbr-webapps:926 usr/local/bin/voidbr-webapps:1017
+msgid "Já existe um WebApp com esta URL usando o mesmo navegador."
+msgstr "이 URL을 사용하는 웹앱이 이미 동일한 브라우저를 사용하고 있습니다."
+
+#: usr/local/bin/voidbr-webapps:989 usr/local/bin/voidbr-webapps:1196
+msgid "O campo nome é obrigatório."
+msgstr "이름 필드는 필수입니다."
+
+#: usr/local/bin/voidbr-webapps:993 usr/local/bin/voidbr-webapps:1200
+msgid "O campo URL é obrigatório."
+msgstr "URL 필드는 필수입니다."
+
+#: usr/local/bin/voidbr-webapps:1071
 msgid "Editar WebApp"
 msgstr "웹앱 편집"
 
-#: usr/local/bin/voidbr-webapps:886
+#: usr/local/bin/voidbr-webapps:1411
 msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
 msgstr "VoidBR 생태계의 공식 WebApps 관리자입니다."
 
-#: usr/local/bin/voidbr-webapps:888
+#: usr/local/bin/voidbr-webapps:1413
 msgid "Website do Projeto"
 msgstr "프로젝트 웹사이트"
