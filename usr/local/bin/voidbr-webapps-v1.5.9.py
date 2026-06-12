@@ -3,8 +3,8 @@
 #
 #   voidbr-webapps
 #   Created: sex 05 jun 2026 13:02:13 -04
-#   Altered: sex 12 jun 2026 01:40:00 -04
-#   Updated: sex 12 jun 2026 01:40:00 -04
+#   Altered: sex 12 jun 2026 01:05:00 -04
+#   Updated: sex 12 jun 2026 01:05:00 -04
 #
 #   Copyright (c) 2019-2026, Vilmar Catafesta <vcatafesta@gmail.com>
 #   Copyright (c) 2019-2026, ChiliLinux Development Team <https://chililinux.com> <https://github.com/chililinux>
@@ -12,11 +12,11 @@
 #   All rights reserved.
 #
 #   ChangeLog:
-#   - v1.6.0 (2026-06-12): Corrigido bug crítico de travamento e não abertura do aplicativo. Removida conexão inválida do sinal 'activate' na ColumnView e implementado controle de duplo clique via Gtk.GestureClick. Adicionada flag contra recursão infinita em widgets de seleção de navegadores.
+#   - v1.5.9 (2026-06-12): Implementado isolamento real absoluto de dados. Agora, cada WebApp possui seu próprio diretório de perfil exclusivo (cookies, cache, logins) baseado no ID, localizado em '~/.local/share/voidbr-webapps/profiles/app-{id}'. Blindada a rotina de edição para suportar a troca de navegadores mantendo o perfil, e a rotina de remoção para limpar os dados do disco. Atualizada a execução direta via interface para respeitar o isolamento.
+#   - v1.5.8 (2026-06-12): Refatorada e blindada a rotina de edição 'on_edit'. Garantiu-se o repasse correto do parâmetro 'ignore_app' para permitir a manutenção ou troca do navegador sem bloqueios de duplicidade de URL, realizando o overwrite e a limpeza imediata do cache de atalhos no KDE Plasma.
+#   - v1.5.7 (2026-06-12): Corrigido o problema de ocultação de entradas duplicadas no menu do KDE Plasma. Implementada diferenciação fina usando a flag '--class' combinada com 'StartupWMClass' e 'X-WebApp-URL' nos navegadores Chromium-based, e fragmentos únicos de URL nos navegadores genéricos, evitando colisões de cache no KSycoca sem quebrar isolamentos ou perfis.
+#   - v1.5.6 (2026-06-11): Corrigida falha de atualização de menus no KDE Plasma. Implementada sincronização forçada de I/O, invalidação de timestamp do diretório local e envio de sinais D-Bus para o recarregamento imediato do painel/menu (Kicker/Kickoff).
 #   - v1.5.5 (2026-06-11): Criada função unificada 'update_desktop_caches' para atualização de cache de menus (.desktop), tratando de forma robusta o comportamento exigente do KDE Plasma (kbuildsycoca) em conjunto com ambientes Freedesktop genéricos (update-desktop-database). Aplicado de forma consistente na criação, remoção e edição de WebApps.
-#   - v1.5.4 (2026-06-11): Corrigido comportamento do menu de contexto (clique direito) para ser acionado em qualquer lugar da linha selecionada na ColumnView.
-#   - v1.5.3 (2026-06-11): Adicionado botão para escolher ícone personalizado na janela de edição de WebApps.
-#   - v1.5.2 (2026-06-11): Implementado suporte completo ao navegador Opera (modo janela/isolado e detecção automática).
 #
 #   Redistribution and use in source and binary forms, with or without
 #   modification, are permitted provided that the following conditions
@@ -61,6 +61,7 @@ from pathlib import Path
 import threading
 import shutil
 import gettext
+import time
 
 import gi
 
@@ -68,7 +69,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.6.0"
+__version__ = "1.5.9"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -79,8 +80,11 @@ _ = gettext.gettext
 
 APP_DIR = Path.home() / ".local/share/voidbr-webapps"
 ICONS_DIR = APP_DIR / "icons"
+PROFILES_DIR = APP_DIR / "profiles" # Novo diretório base para perfis isolados
+
 APP_DIR.mkdir(parents=True, exist_ok=True)
 ICONS_DIR.mkdir(parents=True, exist_ok=True)
+PROFILES_DIR.mkdir(parents=True, exist_ok=True)
 
 JSON_FILE = APP_DIR / "webapps.json"
 CONFIG_FILE = APP_DIR / "config.json"
@@ -153,8 +157,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.set_title(f"VoidBR WebApps - v{__version__}")
         self.set_default_size(950, 500)
-
-        self._updating_combo = False
 
         provider = Gtk.CssProvider()
         provider.load_from_data(CSS_DATA)
@@ -245,17 +247,13 @@ class MainWindow(Gtk.ApplicationWindow):
         self.columnview.set_hexpand(True)
         self.columnview.set_vexpand(True)
 
-        # Controlador para capturar o Clique Direito (Menu de Contexto)
+        self.columnview.connect("activate", self.on_item_activated_view)
+
+        # Controlador para capturar o Clique Direito em qualquer lugar da ColumnView
         gesture_right_click = Gtk.GestureClick.new()
         gesture_right_click.set_button(Gdk.BUTTON_SECONDARY)
         gesture_right_click.connect("pressed", self.on_view_right_clicked)
         self.columnview.add_controller(gesture_right_click)
-
-        # Controlador para capturar o Duplo Clique (Executar o WebApp)
-        gesture_double_click = Gtk.GestureClick.new()
-        gesture_double_click.set_button(Gdk.BUTTON_PRIMARY)
-        gesture_double_click.connect("pressed", self.on_view_double_clicked)
-        self.columnview.add_controller(gesture_double_click)
 
         # Vincular gerenciador de ordenação nativa da ColumnView
         self.sort_model.set_sorter(self.columnview.get_sorter())
@@ -305,6 +303,16 @@ class MainWindow(Gtk.ApplicationWindow):
             if app_id not in valid_ids:
                 try:
                     desktop_file.unlink()
+                except Exception:
+                    pass
+        
+        # Limpa diretórios de perfil órfãos (Novo na v1.5.9)
+        for profile_dir in PROFILES_DIR.iterdir():
+            if not profile_dir.is_dir():
+                continue
+            if profile_dir.name.replace("app-", "") not in valid_ids:
+                try:
+                    shutil.rmtree(profile_dir)
                 except Exception:
                     pass
 
@@ -432,12 +440,6 @@ class MainWindow(Gtk.ApplicationWindow):
         popover.set_pointing_to(rect)
         popover.popup()
 
-    def on_view_double_clicked(self, gesture, n_press, x, y):
-        if n_press == 2:  # Captura o duplo clique nativo Freedesktop
-            pos = self.selection.get_selected()
-            if pos != Gtk.INVALID_LIST_POSITION:
-                self.on_item_activated_view(None, pos)
-
     def _resolve_browser_exec(self, b_id):
         variants = {
             "chromium": ["chromium"],
@@ -480,6 +482,7 @@ class MainWindow(Gtk.ApplicationWindow):
         return None, -1
 
     def on_item_activated_view(self, view, position):
+        """Executa o WebApp respeitando as configurações de isolamento de perfil da v1.5.9"""
         if position == Gtk.INVALID_LIST_POSITION:
             return
         obj = self.sort_model.get_item(position)
@@ -499,19 +502,42 @@ class MainWindow(Gtk.ApplicationWindow):
             if browser_choice != "default"
             else None
         )
-
+        
         if not exec_binary:
             subprocess.Popen(["xdg-open", url])
-        elif browser_choice == "firefox" or browser_choice == "opera":
+            return
+
+        # Montagem do diretório de perfil isolado para execução direta (Novo na v1.5.9)
+        startup_class = f"voidbr-webapp-{app['id']}"
+        profile_dir = PROFILES_DIR / f"app-{app['id']}"
+        profile_dir.mkdir(parents=True, exist_ok=True)
+        
+        exec_cmd_list = [exec_binary]
+
+        # Tratamento de flags específicas por navegador para isolamento real de cookies/dados
+        if browser_choice == "firefox":
             if window_mode:
-                subprocess.Popen([exec_binary, "--new-window", url])
+                exec_cmd_list.extend(["-profile", str(profile_dir), "--new-window", url])
             else:
-                subprocess.Popen([exec_binary, url])
+                exec_cmd_list.append(url)
+        elif browser_choice == "opera":
+            if window_mode:
+                exec_cmd_list.extend([f"--user-data-dir={profile_dir}", "--new-window", url])
+            else:
+                exec_cmd_list.append(url)
         else:
+            # Google Chrome, Brave, Chromium, Vivaldi, Microsoft Edge (Motores baseados em Chromium)
             if window_mode:
-                subprocess.Popen([exec_binary, f"--app={url}"])
+                exec_cmd_list.extend([f'--class="{startup_class}"', f"--user-data-dir={profile_dir}", f"--app={url}"])
             else:
-                subprocess.Popen([exec_binary, url])
+                exec_cmd_list.extend([f'--class="{startup_class}"', f"--user-data-dir={profile_dir}", url])
+
+        try:
+            # Executa usando subprocess de forma isolada
+            subprocess.Popen(exec_cmd_list)
+        except Exception as e:
+            # Fallback seguro caso a execução complexa falhe
+            subprocess.Popen(["xdg-open", url])
 
     def on_menu_action(self, action_type):
         pos = self.selection.get_selected()
@@ -662,24 +688,36 @@ class MainWindow(Gtk.ApplicationWindow):
         return combo
 
     def _update_browser_combo(self, combo, url, btn_save=None, ignore_app=None):
-        if getattr(self, "_updating_combo", False):
-            return
-
         check_url = url.strip()
+
         if not check_url:
             return
 
         if not check_url.startswith(("http://", "https://")):
             check_url = "https://" + check_url
 
-        available = self.get_available_browsers(check_url, ignore_app=ignore_app)
+        available = self.get_available_browsers(
+            check_url,
+            ignore_app=ignore_app
+        )
 
         if not available:
-            self._updating_combo = True
             combo.remove_all()
-            self._updating_combo = False
+
             if btn_save:
                 btn_save.set_sensitive(False)
+
+            try:
+                alert = Gtk.AlertDialog()
+                alert.set_modal(True)
+                alert.set_message(_("🚫 Nenhum navegador disponível"))
+                alert.set_detail(
+                    _("Todos os navegadores disponíveis já estão sendo utilizados para esta URL.")
+                )
+                alert.show(self)
+            except Exception:
+                pass
+
             return
 
         if btn_save:
@@ -687,7 +725,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         current_active = combo.get_active_id()
 
-        self._updating_combo = True
         combo.remove_all()
 
         for b_id, b_name in available.items():
@@ -697,7 +734,6 @@ class MainWindow(Gtk.ApplicationWindow):
             combo.set_active_id(current_active)
         else:
             combo.set_active(0)
-        self._updating_combo = False
 
     def _setup_file_dialog_filter(self):
         file_filter = Gtk.FileFilter()
@@ -751,7 +787,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
                 GLib.idle_add(update_ui)
             except Exception:
-
                 def update_ui_error():
                     if not getattr(dialog_obj, "user_locked_custom_icon", False):
                         preview_widget.set_from_icon_name("web-browser")
@@ -965,20 +1000,6 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.user_locked_custom_icon = False
         dialog.is_url_favicon = False
 
-        button_box = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            spacing=10,
-            halign=Gtk.Align.END,
-            margin_top=10,
-        )
-        main_layout.append(button_box)
-
-        btn_cancel = Gtk.Button(label=_("Cancelar"))
-        btn_cancel.connect("clicked", lambda b: dialog.close())
-
-        btn_save = Gtk.Button(label=_("Salvar"))
-        btn_save.add_css_class("suggested-action")
-
         def refresh_ui_logic(entry):
             url_text = entry.get_text().strip()
             url_error_label.set_text("")
@@ -986,7 +1007,7 @@ class MainWindow(Gtk.ApplicationWindow):
             if not url_text:
                 return
 
-            self._update_browser_combo(browser_combo, url_text, btn_save=btn_save)
+            self._update_browser_combo(browser_combo, url_text)
 
             if self.is_valid_url(url_text) or self.is_valid_url("https://" + url_text):
                 self._async_fetch_favicon_preview(
@@ -1018,6 +1039,20 @@ class MainWindow(Gtk.ApplicationWindow):
                 )(res.open_finish(target)),
             ),
         )
+
+        button_box = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=10,
+            halign=Gtk.Align.END,
+            margin_top=10,
+        )
+        main_layout.append(button_box)
+
+        btn_cancel = Gtk.Button(label=_("Cancelar"))
+        btn_cancel.connect("clicked", lambda b: dialog.close())
+
+        btn_save = Gtk.Button(label=_("Salvar"))
+        btn_save.add_css_class("suggested-action")
 
         def add_save_clicked(b):
             name, url, browser = (
@@ -1066,6 +1101,7 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.present()
 
     def on_edit(self):
+        """Abre a janela de edição blindada e ajustada para isolamento na v1.5.9"""
         app, idx = self._get_selected_app_and_index()
         if not app:
             return
@@ -1097,6 +1133,9 @@ class MainWindow(Gtk.ApplicationWindow):
         for b_id, b_name in self._get_installed_browsers().items():
             browser_combo.append(b_id, b_name)
         browser_combo.set_active_id(app.get("browser", "default"))
+        
+        # Garante o preenchimento de navegadores considerando a exclusão correta do app em edição
+        self._update_browser_combo(browser_combo, app["url"], ignore_app=app)
 
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
@@ -1125,25 +1164,8 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.selected_custom_icon = app.get("icon")
         dialog.user_locked_custom_icon = False
 
-        button_box = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            spacing=10,
-            halign=Gtk.Align.END,
-            margin_top=10,
-        )
-        main_layout.append(button_box)
-
-        btn_save = Gtk.Button(label=_("Salvar"))
-        btn_save.add_css_class("suggested-action")
-
-        self._update_browser_combo(
-            browser_combo, app["url"], btn_save=btn_save, ignore_app=app
-        )
-
         def refresh_ui_logic(entry):
-            self._update_browser_combo(
-                browser_combo, entry.get_text(), btn_save=btn_save, ignore_app=app
-            )
+            self._update_browser_combo(browser_combo, entry.get_text(), ignore_app=app)
             self._async_fetch_favicon_preview(
                 entry.get_text(), preview_img, Gtk.Label(), dialog
             )
@@ -1171,24 +1193,30 @@ class MainWindow(Gtk.ApplicationWindow):
             ),
         )
 
+        button_box = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=10,
+            halign=Gtk.Align.END,
+            margin_top=10,
+        )
+        main_layout.append(button_box)
+
+        btn_save = Gtk.Button(label=_("Salvar"))
+        btn_save.add_css_class("suggested-action")
+
         def edit_save_clicked(b):
             app["name"] = name_entry.get_text().strip()
             app["url"] = url_entry.get_text().strip()
             app["browser"] = browser_combo.get_active_id()
 
-            if (
-                dialog.selected_custom_icon
-                and dialog.selected_custom_icon != app.get("icon")
-                and os.path.exists(dialog.selected_custom_icon)
-            ):
-                dest_path = self.get_icon_path(
-                    app, Path(dialog.selected_custom_icon).suffix
-                )
+            if dialog.selected_custom_icon and dialog.selected_custom_icon != app.get("icon") and os.path.exists(dialog.selected_custom_icon):
+                dest_path = self.get_icon_path(app, Path(dialog.selected_custom_icon).suffix)
                 shutil.copy(dialog.selected_custom_icon, dest_path)
                 app["icon"] = str(dest_path)
 
             self.save_apps()
             self.refresh()
+            # Regera o .desktop forçando a nova lógica de isolamento (Novo na v1.5.9)
             self.generate_desktop_file(app)
             dialog.close()
 
@@ -1224,19 +1252,33 @@ class MainWindow(Gtk.ApplicationWindow):
         self.refresh()
 
     def on_remove(self, button):
+        """Remove o WebApp e limpa recursivamente o diretório de perfil (cookies/dados)"""
         app, idx = self._get_selected_app_and_index()
         if idx != -1 and app:
+            # 1. Remove o ícone
             if app.get("icon") and os.path.exists(app["icon"]):
                 try:
                     os.remove(app["icon"])
                 except:
                     pass
+            
+            # 2. Remove o arquivo .desktop
             desktop_file = self.get_desktop_path(app)
             if desktop_file.exists():
                 try:
                     desktop_file.unlink()
                 except:
                     pass
+            
+            # 3. Remove o diretório de perfil isolado (Novo na v1.5.9)
+            profile_dir = PROFILES_DIR / f"app-{app['id']}"
+            if profile_dir.exists() and profile_dir.is_dir():
+                try:
+                    shutil.rmtree(profile_dir)
+                except Exception:
+                    pass
+
+            # 4. Remove da base de dados
             del self.apps[idx]
             self.save_apps()
             self.refresh()
@@ -1245,6 +1287,19 @@ class MainWindow(Gtk.ApplicationWindow):
     def update_desktop_caches(self):
         """Atualiza de forma robusta os caches de menus e atalhos (.desktop) para qualquer DE (GNOME, Xfce, KDE Plasma, etc.)"""
         apps_local_dir = Path.home() / ".local/share/applications"
+
+        # Força flushing de I/O para o disco antes de chamar os comandos externos
+        try:
+            os.sync()
+        except:
+            pass
+
+        # Invalida o timestamp do diretório local para obrigar o KDirWatch do KDE a notar mudanças
+        try:
+            now = time.time()
+            os.utime(str(apps_local_dir), (now, now))
+        except:
+            pass
 
         # 1. Freedesktop Standard: reconstrói base local para GNOME, Xfce, Cinnamon, Mate, etc.
         if shutil.which("update-desktop-database"):
@@ -1269,7 +1324,7 @@ class MainWindow(Gtk.ApplicationWindow):
         except Exception:
             pass
 
-        # 3. Mandatório para KDE Plasma: força reconstrução profunda do cache binário do KService e envia sinais DBus
+        # 3. Mandatório para KDE Plasma: força reconstrução profunda do cache binário do KService
         for cmd in ("kbuildsycoca6", "kbuildsycoca5"):
             exe = shutil.which(cmd)
             if exe:
@@ -1284,10 +1339,34 @@ class MainWindow(Gtk.ApplicationWindow):
                     pass
                 break
 
+        # 4. Envio de sinais D-Bus específicos do KDE para forçar o recarregamento instantâneo do Kicker/Kickoff
+        dbus_payloads = [
+            ["qdbus", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.refreshCurrentShellPage"],
+            ["dbus-send", "--session", "--dest=org.freedesktop.menu", "/org/freedesktop/menu", "org.freedesktop.menu.changed"]
+        ]
+        for payload in dbus_payloads:
+            if shutil.which(payload[0]):
+                try:
+                    subprocess.run(payload, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                except:
+                    pass
+
     def generate_desktop_file(self, app):
+        """Gera o arquivo .desktop implementando o isolamento real de dados na v1.5.9"""
         desktop_dir = Path.home() / ".local/share/applications"
         desktop_dir.mkdir(parents=True, exist_ok=True)
         filename = self.get_desktop_path(app)
+        
+        # Coleta das configurações
+        browser_choice = app.get("browser", "default")
+        window_mode = app.get("window_mode", self.config.get("window_mode", True))
+        
+        # Criação do diretório exclusivo para Cookies, Cache e Sessão deste WebApp (Novo na v1.5.9)
+        startup_class = f"voidbr-webapp-{app['id']}"
+        profile_dir = PROFILES_DIR / f"app-{app['id']}"
+        if window_mode:  # Só cria o perfil separado se o usuário quiser o app isolado
+            profile_dir.mkdir(parents=True, exist_ok=True)
+
         icon_to_use = (
             app.get("icon")
             if (app.get("icon") and os.path.exists(app["icon"]))
@@ -1298,42 +1377,62 @@ class MainWindow(Gtk.ApplicationWindow):
             if app["url"].startswith(("http://", "https://"))
             else "https://" + app["url"]
         )
-        browser_choice = app.get("browser", "default")
-        window_mode = app.get("window_mode", self.config.get("window_mode", True))
-        exec_binary = (
-            self._resolve_browser_exec(browser_choice)
-            if browser_choice != "default"
-            else None
-        )
-        if not exec_binary:
-            exec_command = f'xdg-open "{url}"'
-        elif browser_choice == "firefox" or browser_choice == "opera":
-            exec_command = (
-                f'{exec_binary} --new-window "{url}"'
-                if window_mode
-                else f'{exec_binary} "{url}"'
-            )
-        else:
-            exec_command = (
-                f'{exec_binary} --app="{url}"'
-                if window_mode
-                else f'{exec_binary} "{url}"'
-            )
+        exec_binary = self._resolve_browser_exec(browser_choice) if browser_choice != "default" else None
 
+        browsers_map = self._get_installed_browsers()
+        friendly_browser = browsers_map.get(browser_choice, "Web")
+
+        # Nomenclatura para o menu
+        if browser_choice == "default":
+            display_name = app['name']
+        else:
+            display_name = f"{app['name']} ({friendly_browser})"
+
+        # --- LÓGICA DE ISOLAMENTO REAL DE DIRETÓRIO NO .DESKTOP (v1.5.9) ---
+        if not exec_binary:
+            # Fallback xdg-open genérico: Inserimos hash na URL apenas para desambiguação no KDE
+            url_unique = f"{url}#voidbr-webapp-{app['id']}"
+            exec_command = f'xdg-open "{url_unique}"'
+            
+        elif browser_choice == "firefox":
+            if window_mode:
+                # Firefox: Força criação/uso de um perfil dedicado
+                exec_command = f'{exec_binary} -profile "{profile_dir}" --new-window "{url}"'
+            else:
+                exec_command = f'{exec_binary} "{url}"'
+                
+        elif browser_choice == "opera":
+            if window_mode:
+                # Opera: Força janela limpa E diretório de dados/cookies 100% isolado
+                exec_command = f'{exec_binary} --user-data-dir="{profile_dir}" --new-window "{url}"'
+            else:
+                exec_command = f'{exec_binary} "{url}"'
+                
+        else:
+            # Google Chrome, Brave, Chromium, Vivaldi, Microsoft Edge (Motores baseados em Chromium)
+            if window_mode:
+                # Força janela limpa E diretório de dados/cookies 100% isolado (Flags combinadas da v1.5.7 + v1.5.9)
+                exec_command = f'{exec_binary} --class="{startup_class}" --user-data-dir="{profile_dir}" --app="{url}"'
+            else:
+                # Mesmo sem modo app, isolamos os dados se houver executável definido
+                exec_command = f'{exec_binary} --class="{startup_class}" --user-data-dir="{profile_dir}" "{url}"'
+
+        # Categorias
         base_cat = app.get("category", self.config.get("default_category", ""))
-        final_categories = (
-            f"X-VoidBR-WebApps;{base_cat}" if base_cat else "X-VoidBR-WebApps;"
-        )
+        final_categories = f"X-VoidBR-WebApps;{base_cat}" if base_cat else "X-VoidBR-WebApps;"
         if not final_categories.endswith(";"):
             final_categories += ";"
 
+        # Escrita do arquivo .desktop seguindo o padrão Freedesktop/KDE
         desktop = f"""[Desktop Entry]
 Type=Application
-Name={app['name']}
+Name={display_name}
 Exec={exec_command}
 Icon={icon_to_use}
 Terminal=false
 StartupNotify=true
+StartupWMClass={startup_class}
+X-WebApp-URL={url}
 Categories={final_categories}
 """
         with open(filename, "w", encoding="utf-8") as f:
