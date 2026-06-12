@@ -3,8 +3,8 @@
 #
 #   voidbr-webapps
 #   Created: sex 05 jun 2026 13:02:13 -04
-#   Altered: sab 06 jun 2026 13:25:00 -04
-#   Updated: sab 06 jun 2026 13:25:00 -04
+#   Altered: qui 11 jun 2026 22:55:00 -04
+#   Updated: qui 11 jun 2026 22:55:00 -04
 #
 #   Copyright (c) 2019-2026, Vilmar Catafesta <vcatafesta@gmail.com>
 #   Copyright (c) 2019-2026, ChiliLinux Development Team <https://chililinux.com> <https://github.com/chililinux>
@@ -61,7 +61,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.5.2"
+__version__ = "1.5.3"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -424,6 +424,7 @@ class MainWindow(Gtk.ApplicationWindow):
             "firefox": ["firefox"],
             "microsoft-edge": ["microsoft-edge", "microsoft-edge-stable"],
             "vivaldi": ["vivaldi", "vivaldi-stable"],
+            "opera": ["opera", "opera-stable"],
         }
         if b_id in variants:
             for variant in variants[b_id]:
@@ -439,6 +440,7 @@ class MainWindow(Gtk.ApplicationWindow):
             "firefox": "Mozilla Firefox",
             "microsoft-edge": "Microsoft Edge",
             "vivaldi": "Vivaldi",
+            "opera": "Opera",
         }
         installed = {"default": _("Navegador Padrão do Sistema (xdg-open)")}
         for b_id, b_name in supported.items():
@@ -479,6 +481,13 @@ class MainWindow(Gtk.ApplicationWindow):
         if not exec_binary:
             subprocess.Popen(["xdg-open", url])
         elif browser_choice == "firefox":
+            if window_mode:
+                subprocess.Popen([exec_binary, "--new-window", url])
+            else:
+                subprocess.Popen([exec_binary, url])
+        elif browser_choice == "opera":
+            # Opera não suporta a flag padrão Chromiun --app diretamente de maneira limpa em versões estáveis antigas,
+            # mas aceita --new-window ou comportamento similar se baseado em Chromium recente.
             if window_mode:
                 subprocess.Popen([exec_binary, "--new-window", url])
             else:
@@ -639,64 +648,6 @@ class MainWindow(Gtk.ApplicationWindow):
         combo.set_active_id(active_id)
         return combo
 
-    ####################################################################################
-    def _update_browser_comboOLD(self, combo, url, ignore_app=None):
-        check_url = url.strip()
-
-        if not check_url.startswith(("http://", "https://")):
-            check_url = "https://" + check_url
-
-        available = self.get_available_browsers(check_url, ignore_app=ignore_app)
-        current_active = combo.get_active_id()
-
-        combo.remove_all()
-        for b_id, b_name in available.items():
-            combo.append(b_id, b_name)
-
-        if current_active in available:
-            combo.set_active_id(current_active)
-        else:
-            combo.set_active(0)
-
-    ####################################################################################
-    def _update_browser_comboNEW(
-        self, combo, url, url_error_label=None, ignore_app=None
-    ):
-        check_url = url.strip()
-
-        if not check_url.startswith(("http://", "https://")):
-            check_url = "https://" + check_url
-
-        available = self.get_available_browsers(check_url, ignore_app=ignore_app)
-
-        if not available:
-            combo.remove_all()
-
-            if url_error_label:
-                url_error_label.set_text(
-                    _(
-                        "Todos os navegadores disponíveis já estão sendo utilizados para esta URL."
-                    )
-                )
-
-            return
-
-        if url_error_label:
-            url_error_label.set_text("")
-
-        current_active = combo.get_active_id()
-
-        combo.remove_all()
-
-        for b_id, b_name in available.items():
-            combo.append(b_id, b_name)
-
-        if current_active in available:
-            combo.set_active_id(current_active)
-        else:
-            combo.set_active(0)
-
-    ####################################################################################
     def _update_browser_combo(self, combo, url, btn_save=None, ignore_app=None):
         check_url = url.strip()
 
@@ -744,7 +695,7 @@ class MainWindow(Gtk.ApplicationWindow):
             combo.set_active_id(current_active)
         else:
             combo.set_active(0)
-    ####################################################################################
+
     def _setup_file_dialog_filter(self):
         file_filter = Gtk.FileFilter()
         file_filter.set_name(_("Imagens (*.png, *.jpg, *.svg)"))
@@ -1159,6 +1110,10 @@ class MainWindow(Gtk.ApplicationWindow):
         grid.attach(Gtk.Label(label=_("Navegador:"), xalign=1), 0, 4, 1, 1)
         grid.attach(browser_combo, 1, 4, 1, 1)
 
+        grid.attach(Gtk.Label(label=_("Ícone:"), xalign=1), 0, 5, 1, 1)
+        icon_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        grid.attach(icon_box, 1, 5, 1, 1)
+
         preview_img = Gtk.Image()
         preview_img.set_pixel_size(32)
         preview_img.add_css_class("preview-icon")
@@ -1166,9 +1121,14 @@ class MainWindow(Gtk.ApplicationWindow):
             preview_img.set_from_file(app["icon"])
         else:
             preview_img.set_from_icon_name("web-browser")
-        grid.attach(preview_img, 1, 5, 1, 1)
+        icon_box.append(preview_img)
+
+        btn_browse = Gtk.Button(label=_("Escolher Ícone..."))
+        btn_browse.set_icon_name("folder-open-symbolic")
+        icon_box.append(btn_browse)
 
         dialog.selected_custom_icon = app.get("icon")
+        dialog.user_locked_custom_icon = False
 
         def refresh_ui_logic(entry):
             self._update_browser_combo(browser_combo, entry.get_text(), ignore_app=app)
@@ -1179,6 +1139,25 @@ class MainWindow(Gtk.ApplicationWindow):
         focus_controller = Gtk.EventControllerFocus.new()
         focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
         url_entry.add_controller(focus_controller)
+
+        btn_browse.connect(
+            "clicked",
+            lambda b: self._setup_file_dialog_filter().open(
+                dialog,
+                None,
+                lambda res, target: (
+                    lambda f: (
+                        (
+                            setattr(dialog, "selected_custom_icon", f.get_path()),
+                            setattr(dialog, "user_locked_custom_icon", True),
+                            preview_img.set_from_file(f.get_path()),
+                        )
+                        if f
+                        else None
+                    )
+                )(res.open_finish(target)),
+            ),
+        )
 
         button_box = Gtk.Box(
             orientation=Gtk.Orientation.HORIZONTAL,
@@ -1195,6 +1174,13 @@ class MainWindow(Gtk.ApplicationWindow):
             app["name"] = name_entry.get_text().strip()
             app["url"] = url_entry.get_text().strip()
             app["browser"] = browser_combo.get_active_id()
+
+            # Processa e copia o novo ícone customizado se o usuário alterou na edição
+            if dialog.selected_custom_icon and dialog.selected_custom_icon != app.get("icon") and os.path.exists(dialog.selected_custom_icon):
+                dest_path = self.get_icon_path(app, Path(dialog.selected_custom_icon).suffix)
+                shutil.copy(dialog.selected_custom_icon, dest_path)
+                app["icon"] = str(dest_path)
+
             self.save_apps()
             self.refresh()
             self.generate_desktop_file(app)
@@ -1272,7 +1258,7 @@ class MainWindow(Gtk.ApplicationWindow):
         )
         if not exec_binary:
             exec_command = f'xdg-open "{url}"'
-        elif browser_choice == "firefox":
+        elif browser_choice == "firefox" or browser_choice == "opera":
             exec_command = (
                 f'{exec_binary} --new-window "{url}"'
                 if window_mode
