@@ -3,8 +3,8 @@
 #
 #   voidbr-webapps
 #   Created: sex 05 jun 2026 13:02:13 -04
-#   Altered: sex 12 jun 2026 00:35:00 -04
-#   Updated: sex 12 jun 2026 00:35:00 -04
+#   Altered: qui 11 jun 2026 23:40:00 -04
+#   Updated: qui 11 jun 2026 23:40:00 -04
 #
 #   Copyright (c) 2019-2026, Vilmar Catafesta <vcatafesta@gmail.com>
 #   Copyright (c) 2019-2026, ChiliLinux Development Team <https://chililinux.com> <https://github.com/chililinux>
@@ -12,10 +12,11 @@
 #   All rights reserved.
 #
 #   ChangeLog:
-#   - v1.5.8 (2026-06-12): Refatorada e blindada a rotina de edição 'on_edit'. Garantiu-se o repasse correto do parâmetro 'ignore_app' para permitir a manutenção ou troca do navegador sem bloqueios de duplicidade de URL, realizando o overwrite e a limpeza imediata do cache de atalhos no KDE Plasma.
-#   - v1.5.7 (2026-06-12): Corrigido o problema de ocultação de entradas duplicadas no menu do KDE Plasma. Implementada diferenciação fina usando a flag '--class' combinada com 'StartupWMClass' e 'X-WebApp-URL' nos navegadores Chromium-based, e fragmentos únicos de URL nos navegadores genéricos, evitando colisões de cache no KSycoca sem quebrar isolamentos ou perfis.
 #   - v1.5.6 (2026-06-11): Corrigida falha de atualização de menus no KDE Plasma. Implementada sincronização forçada de I/O, invalidação de timestamp do diretório local e envio de sinais D-Bus para o recarregamento imediato do painel/menu (Kicker/Kickoff).
 #   - v1.5.5 (2026-06-11): Criada função unificada 'update_desktop_caches' para atualização de cache de menus (.desktop), tratando de forma robusta o comportamento exigente do KDE Plasma (kbuildsycoca) em conjunto com ambientes Freedesktop genéricos (update-desktop-database). Aplicado de forma consistente na criação, remoção e edição de WebApps.
+#   - v1.5.4 (2026-06-11): Corrigido comportamento do menu de contexto (clique direito) para ser acionado em qualquer lugar da linha selecionada na ColumnView.
+#   - v1.5.3 (2026-06-11): Adicionado botão para escolher ícone personalizado na janela de edição de WebApps.
+#   - v1.5.2 (2026-06-11): Implementado suporte completo ao navegador Opera (modo janela/isolado e detecção automática).
 #
 #   Redistribution and use in source and binary forms, with or without
 #   modification, are permitted provided that the following conditions
@@ -68,7 +69,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.5.8"
+__version__ = "1.5.6"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -629,6 +630,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 used.add(app.get("browser", "default"))
 
         browsers = self._get_installed_browsers()
+
         return {b_id: b_name for b_id, b_name in browsers.items() if b_id not in used}
 
     def _suggest_name_from_url(self, url_text):
@@ -690,6 +692,7 @@ class MainWindow(Gtk.ApplicationWindow):
             btn_save.set_sensitive(True)
 
         current_active = combo.get_active_id()
+
         combo.remove_all()
 
         for b_id, b_name in available.items():
@@ -1097,8 +1100,6 @@ class MainWindow(Gtk.ApplicationWindow):
         for b_id, b_name in self._get_installed_browsers().items():
             browser_combo.append(b_id, b_name)
         browser_combo.set_active_id(app.get("browser", "default"))
-        
-        # Garante o preenchimento de navegadores considerando a exclusão correta do app em edição
         self._update_browser_combo(browser_combo, app["url"], ignore_app=app)
 
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
@@ -1321,38 +1322,20 @@ class MainWindow(Gtk.ApplicationWindow):
             if browser_choice != "default"
             else None
         )
-
-        # Identificação e nomenclatura fina para desambiguação no KDE Plasma / KSycoca
-        startup_class = f"voidbr-webapp-{app['id']}"
-        browsers_map = self._get_installed_browsers()
-        friendly_browser = browsers_map.get(browser_choice, "Web")
-
-        # Se for o navegador padrão xdg, omitimos o sufixo longo para melhor estética visual
-        if browser_choice == "default":
-            display_name = app['name']
-        else:
-            display_name = f"{app['name']} ({friendly_browser})"
-
-        # Construção do comando de execução segura e tratamento de assinaturas duplicadas
         if not exec_binary:
-            # Para xdg-open genérico, inserimos um fragmento único para evitar mesclagem de strings iguais
-            url_unique = f"{url}#voidbr-webapp-{app['id']}"
-            exec_command = f'xdg-open "{url_unique}"'
+            exec_command = f'xdg-open "{url}"'
         elif browser_choice == "firefox" or browser_choice == "opera":
-            # Firefox e Opera: Evitamos travamento de instâncias simultâneas injetando a hash na URL
-            url_unique = f"{url}#voidbr-webapp-{app['id']}"
             exec_command = (
-                f'{exec_binary} --new-window "{url_unique}"'
+                f'{exec_binary} --new-window "{url}"'
                 if window_mode
-                else f'{exec_binary} "{url_unique}"'
+                else f'{exec_binary} "{url}"'
             )
         else:
-            # Google Chrome, Brave, Chromium, Vivaldi, Microsoft Edge (Motores baseados em Chromium)
-            # Aplicamos a flag '--class' individual antes do '--app' para quebrar o espelhamento de comandos do KDE
-            if window_mode:
-                exec_command = f'{exec_binary} --class="{startup_class}" --app="{url}"'
-            else:
-                exec_command = f'{exec_binary} --class="{startup_class}" "{url}"'
+            exec_command = (
+                f'{exec_binary} --app="{url}"'
+                if window_mode
+                else f'{exec_binary} "{url}"'
+            )
 
         base_cat = app.get("category", self.config.get("default_category", ""))
         final_categories = (
@@ -1363,13 +1346,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
         desktop = f"""[Desktop Entry]
 Type=Application
-Name={display_name}
+Name={app['name']}
 Exec={exec_command}
 Icon={icon_to_use}
 Terminal=false
 StartupNotify=true
-StartupWMClass={startup_class}
-X-WebApp-URL={url}
 Categories={final_categories}
 """
         with open(filename, "w", encoding="utf-8") as f:
