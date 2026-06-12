@@ -43,17 +43,17 @@ package() {
 }
 
 pre_install() {
-	log "Iniciando instalação"
+	log "${CYAN}Iniciando instalação"
 }
 
 post_install() {
-	log "Finalizando instalação"
+	log "${CYAN}Finalizando instalação"
 }
 
 pre_upgrade() {
-	log "Iniciando upgrade"
+	log "${CYAN}Iniciando upgrade"
 }
 
 post_upgrade() {
-	log "Finalizando upgrade"
+	log "${CYAN}Finalizando upgrade"
 }
