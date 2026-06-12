@@ -3,8 +3,8 @@
 #
 #   voidbr-webapps
 #   Created: sex 05 jun 2026 13:02:13 -04
-#   Altered: sex 12 jun 2026 17:01:00 -04
-#   Updated: sex 12 jun 2026 17:01:00 -04
+#   Altered: sex 12 jun 2026 01:05:00 -04
+#   Updated: sex 12 jun 2026 01:05:00 -04
 #
 #   Copyright (c) 2019-2026, Vilmar Catafesta <vcatafesta@gmail.com>
 #   Copyright (c) 2019-2026, ChiliLinux Development Team <https://chililinux.com> <https://github.com/chililinux>
@@ -12,10 +12,9 @@
 #   All rights reserved.
 #
 #   ChangeLog:
-#   - v1.6.0 (2026-06-12): Implementadas rotinas nativas integradas de Backup e Restauração (.tar.gz) com suporte a caminhos relativos para portabilidade entre usuários, preservando o tema escuro do app e aplicando refresh dinâmico instantâneo na ColumnView após o restauro. Corrigido escopo de memória do Gtk.AlertDialog usando self.alert.
 #   - v1.5.9 (2026-06-12): Implementado isolamento real absoluto de dados. Agora, cada WebApp possui seu próprio diretório de perfil exclusivo (cookies, cache, logins) baseado no ID, localizado em '~/.local/share/voidbr-webapps/profiles/app-{id}'. Blindada a rotina de edição para suportar a troca de navegadores mantendo o perfil, e a rotina de remoção para limpar os dados do disco. Atualizada a execução direta via interface para respeitar o isolamento.
 #   - v1.5.8 (2026-06-12): Refatorada e blindada a rotina de edição 'on_edit'. Garantiu-se o repasse correto do parâmetro 'ignore_app' para permitir a manutenção ou troca do navegador sem bloqueios de duplicidade de URL, realizando o overwrite e a limpeza imediata do cache de atalhos no KDE Plasma.
-#   - v1.5.7 (2026-06-12): Corrigido o problem de ocultação de entradas duplicadas no menu do KDE Plasma. Implementada diferenciação fina usando a flag '--class' combinada com 'StartupWMClass' e 'X-WebApp-URL' nos navegadores Chromium-based, e fragmentos únicos de URL nos navegadores genéricos, evitando colisões de cache no KSycoca sem quebrar isolamentos ou perfis.
+#   - v1.5.7 (2026-06-12): Corrigido o problema de ocultação de entradas duplicadas no menu do KDE Plasma. Implementada diferenciação fina usando a flag '--class' combinada com 'StartupWMClass' e 'X-WebApp-URL' nos navegadores Chromium-based, e fragmentos únicos de URL nos navegadores genéricos, evitando colisões de cache no KSycoca sem quebrar isolamentos ou perfis.
 #   - v1.5.6 (2026-06-11): Corrigida falha de atualização de menus no KDE Plasma. Implementada sincronização forçada de I/O, invalidação de timestamp do diretório local e envio de sinais D-Bus para o recarregamento imediato do painel/menu (Kicker/Kickoff).
 #   - v1.5.5 (2026-06-11): Criada função unificada 'update_desktop_caches' para atualização de cache de menus (.desktop), tratando de forma robusta o comportamento exigente do KDE Plasma (kbuildsycoca) em conjunto com ambientes Freedesktop genéricos (update-desktop-database). Aplicado de forma consistente na criação, remoção e edição de WebApps.
 #
@@ -70,7 +69,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.6.0"
+__version__ = "1.5.9"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -81,7 +80,7 @@ _ = gettext.gettext
 
 APP_DIR = Path.home() / ".local/share/voidbr-webapps"
 ICONS_DIR = APP_DIR / "icons"
-PROFILES_DIR = APP_DIR / "profiles"  # Diretório base para perfis isolados
+PROFILES_DIR = APP_DIR / "profiles"  # Novo diretório base para perfis isolados
 
 APP_DIR.mkdir(parents=True, exist_ok=True)
 ICONS_DIR.mkdir(parents=True, exist_ok=True)
@@ -220,7 +219,9 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_backup = Gtk.Button()
         btn_backup.set_icon_name("archive-insert-symbolic")
         btn_backup.add_css_class("btn-backup")
-        btn_backup.set_tooltip_text(_("Fazer Backup Completo (Dados e Atalhos .desktop)"))
+        btn_backup.set_tooltip_text(
+            _("Fazer Backup Completo (Dados e Atalhos .desktop)")
+        )
         btn_backup.connect("clicked", self.on_backup)
 
         btn_restore = Gtk.Button()
@@ -323,7 +324,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 except Exception:
                     pass
 
-        # Limpa diretórios de perfil órfãos
+        # Limpa diretórios de perfil órfãos (Novo na v1.5.9)
         for profile_dir in PROFILES_DIR.iterdir():
             if not profile_dir.is_dir():
                 continue
@@ -397,6 +398,8 @@ class MainWindow(Gtk.ApplicationWindow):
         sorter_url.set_expression(Gtk.PropertyExpression.new(WebAppItem, None, "url"))
         col_url.set_sorter(sorter_url)
         self.columnview.append_column(col_url)
+
+    # --- Handlers de ciclo de vida das fábricas de células da ColumnView ---
 
     def on_setup_name_column(self, factory, item):
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, margin_start=6)
@@ -497,7 +500,7 @@ class MainWindow(Gtk.ApplicationWindow):
         return None, -1
 
     def on_item_activated_view(self, view, position):
-        """Executa o WebApp respeitando as configurações de isolamento de perfil absoluto"""
+        """Executa o WebApp respeitando as configurações de isolamento de perfil da v1.5.9"""
         if position == Gtk.INVALID_LIST_POSITION:
             return
         obj = self.sort_model.get_item(position)
@@ -522,12 +525,14 @@ class MainWindow(Gtk.ApplicationWindow):
             subprocess.Popen(["xdg-open", url])
             return
 
+        # Montagem do diretório de perfil isolado para execução direta (Novo na v1.5.9)
         startup_class = f"voidbr-webapp-{app['id']}"
         profile_dir = PROFILES_DIR / f"app-{app['id']}"
         profile_dir.mkdir(parents=True, exist_ok=True)
 
         exec_cmd_list = [exec_binary]
 
+        # Tratamento de flags específicas por navegador para isolamento real de cookies/dados
         if browser_choice == "firefox":
             if window_mode:
                 exec_cmd_list.extend(
@@ -543,11 +548,11 @@ class MainWindow(Gtk.ApplicationWindow):
             else:
                 exec_cmd_list.append(url)
         else:
-            # Google Chrome, Brave, Chromium, Vivaldi, Microsoft Edge
+            # Google Chrome, Brave, Chromium, Vivaldi, Microsoft Edge (Motores baseados em Chromium)
             if window_mode:
                 exec_cmd_list.extend(
                     [
-                        f"--class={startup_class}",
+                        f'--class="{startup_class}"',
                         f"--user-data-dir={profile_dir}",
                         f"--app={url}",
                     ]
@@ -555,15 +560,17 @@ class MainWindow(Gtk.ApplicationWindow):
             else:
                 exec_cmd_list.extend(
                     [
-                        f"--class={startup_class}",
+                        f'--class="{startup_class}"',
                         f"--user-data-dir={profile_dir}",
                         url,
                     ]
                 )
 
         try:
+            # Executa usando subprocess de forma isolada
             subprocess.Popen(exec_cmd_list)
-        except Exception:
+        except Exception as e:
+            # Fallback seguro caso a execução complexa falhe
             subprocess.Popen(["xdg-open", url])
 
     def on_menu_action(self, action_type):
@@ -620,6 +627,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def load_apps(self):
         if not JSON_FILE.exists():
             return []
+
         try:
             with open(JSON_FILE, encoding="utf-8") as f:
                 data = json.load(f)
@@ -632,6 +640,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 if "browser" not in app:
                     app["browser"] = "default"
                     migrated = True
+
                 if "id" not in app:
                     app["id"] = next_id
                     next_id += 1
@@ -640,7 +649,9 @@ class MainWindow(Gtk.ApplicationWindow):
             if migrated:
                 with open(JSON_FILE, "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
+
             return data
+
         except:
             return []
 
@@ -662,23 +673,30 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def url_already_exists(self, url, browser, ignore_app=None):
         current_url = url.rstrip("/")
+
         for app in self.apps:
             if ignore_app is not None and app is ignore_app:
                 continue
+
             existing_url = app.get("url", "").rstrip("/")
+
             if existing_url == current_url and app.get("browser", "default") == browser:
                 return True
+
         return False
 
     def get_available_browsers(self, url, ignore_app=None):
         current_url = url.rstrip("/")
         used = set()
+
         for app in self.apps:
             if ignore_app is not None and app is ignore_app:
                 continue
             if app.get("url", "").rstrip("/") == current_url:
                 used.add(app.get("browser", "default"))
+
         browsers = self._get_installed_browsers()
+
         return {b_id: b_name for b_id, b_name in browsers.items() if b_id not in used}
 
     def _suggest_name_from_url(self, url_text):
@@ -695,6 +713,7 @@ class MainWindow(Gtk.ApplicationWindow):
             if available_browsers is not None
             else self._get_installed_browsers()
         )
+
         if active_id not in browsers:
             browsers[active_id] = active_id
         for b_id, b_name in browsers.items():
@@ -704,33 +723,43 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def _update_browser_combo(self, combo, url, btn_save=None, ignore_app=None):
         check_url = url.strip()
+
         if not check_url:
             return
+
         if not check_url.startswith(("http://", "https://")):
             check_url = "https://" + check_url
 
         available = self.get_available_browsers(check_url, ignore_app=ignore_app)
+
         if not available:
             combo.remove_all()
+
             if btn_save:
                 btn_save.set_sensitive(False)
+
             try:
-                self.alert = Gtk.AlertDialog(
-                    message=_("🚫 Nenhum navegador disponível"),
-                    detail=_(
+                alert = Gtk.AlertDialog()
+                alert.set_modal(True)
+                alert.set_message(_("🚫 Nenhum navegador disponível"))
+                alert.set_detail(
+                    _(
                         "Todos os navegadores disponíveis já estão sendo utilizados para esta URL."
-                    ),
+                    )
                 )
-                self.alert.show(self)
+                alert.show(self)
             except Exception:
                 pass
+
             return
 
         if btn_save:
             btn_save.set_sensitive(True)
 
         current_active = combo.get_active_id()
+
         combo.remove_all()
+
         for b_id, b_name in available.items():
             combo.append(b_id, b_name)
 
@@ -791,6 +820,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
                 GLib.idle_add(update_ui)
             except Exception:
+
                 def update_ui_error():
                     if not getattr(dialog_obj, "user_locked_custom_icon", False):
                         preview_widget.set_from_icon_name("web-browser")
@@ -801,6 +831,7 @@ class MainWindow(Gtk.ApplicationWindow):
                                 "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
                             )
                         )
+
                 GLib.idle_add(update_ui_error)
 
         threading.Thread(target=worker, daemon=True).start()
@@ -1006,6 +1037,7 @@ class MainWindow(Gtk.ApplicationWindow):
         def refresh_ui_logic(entry):
             url_text = entry.get_text().strip()
             url_error_label.set_text("")
+
             if not url_text:
                 return
 
@@ -1103,7 +1135,7 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.present()
 
     def on_edit(self):
-        """Abre a janela de edição de forma blindada considerando o parâmetro ignore_app"""
+        """Abre a janela de edição blindada e ajustada para isolamento na v1.5.9"""
         app, idx = self._get_selected_app_and_index()
         if not app:
             return
@@ -1132,9 +1164,12 @@ class MainWindow(Gtk.ApplicationWindow):
         name_entry = Gtk.Entry(text=app["name"], hexpand=True)
         browser_combo = Gtk.ComboBoxText()
 
-        # Preenche os navegadores considerando o isolamento fino da URL e ignorando o app atual
-        self._update_browser_combo(browser_combo, app["url"], ignore_app=app)
+        for b_id, b_name in self._get_installed_browsers().items():
+            browser_combo.append(b_id, b_name)
         browser_combo.set_active_id(app.get("browser", "default"))
+
+        # Garante o preenchimento de navegadores considerando a exclusão correta do app em edição
+        self._update_browser_combo(browser_combo, app["url"], ignore_app=app)
 
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
@@ -1221,6 +1256,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
             self.save_apps()
             self.refresh()
+            # Regera o .desktop forçando a nova lógica de isolamento (Novo na v1.5.9)
             self.generate_desktop_file(app)
             dialog.close()
 
@@ -1256,15 +1292,17 @@ class MainWindow(Gtk.ApplicationWindow):
         self.refresh()
 
     def on_remove(self, button):
-        """Remove o WebApp e limpa recursivamente os dados e diretórios de perfil"""
+        """Remove o WebApp e limpa recursivamente o diretório de perfil (cookies/dados)"""
         app, idx = self._get_selected_app_and_index()
         if idx != -1 and app:
+            # 1. Remove o ícone
             if app.get("icon") and os.path.exists(app["icon"]):
                 try:
                     os.remove(app["icon"])
                 except:
                     pass
 
+            # 2. Remove o arquivo .desktop
             desktop_file = self.get_desktop_path(app)
             if desktop_file.exists():
                 try:
@@ -1272,7 +1310,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 except:
                     pass
 
-            # Limpa o diretório de dados/perfil isolado deste app específico
+            # 3. Remove o diretório de perfil isolado (Novo na v1.5.9)
             profile_dir = PROFILES_DIR / f"app-{app['id']}"
             if profile_dir.exists() and profile_dir.is_dir():
                 try:
@@ -1280,26 +1318,30 @@ class MainWindow(Gtk.ApplicationWindow):
                 except Exception:
                     pass
 
+            # 4. Remove da base de dados
             del self.apps[idx]
             self.save_apps()
             self.refresh()
             self.update_desktop_caches()
 
     def update_desktop_caches(self):
-        """Atualiza de forma robusta os caches de menus e atalhos para qualquer DE (GNOME, Plasma, Xfce)"""
+        """Atualiza de forma robusta os caches de menus e atalhos (.desktop) para qualquer DE (GNOME, Xfce, KDE Plasma, etc.)"""
         apps_local_dir = Path.home() / ".local/share/applications"
 
+        # Força flushing de I/O para o disco antes de chamar os comandos externos
         try:
             os.sync()
         except:
             pass
 
+        # Invalida o timestamp do diretório local para obrigar o KDirWatch do KDE a notar mudanças
         try:
             now = time.time()
             os.utime(str(apps_local_dir), (now, now))
         except:
             pass
 
+        # 1. Freedesktop Standard: reconstrói base local para GNOME, Xfce, Cinnamon, Mate, etc.
         if shutil.which("update-desktop-database"):
             try:
                 subprocess.run(
@@ -1311,6 +1353,7 @@ class MainWindow(Gtk.ApplicationWindow):
             except Exception:
                 pass
 
+        # 2. Utilitário padrão de fallback xdg-utils
         try:
             subprocess.run(
                 ["xdg-desktop-menu", "forceupdate"],
@@ -1321,6 +1364,7 @@ class MainWindow(Gtk.ApplicationWindow):
         except Exception:
             pass
 
+        # 3. Mandatório para KDE Plasma: força reconstrução profunda do cache binário do KService
         for cmd in ("kbuildsycoca6", "kbuildsycoca5"):
             exe = shutil.which(cmd)
             if exe:
@@ -1335,6 +1379,7 @@ class MainWindow(Gtk.ApplicationWindow):
                     pass
                 break
 
+        # 4. Envio de sinais D-Bus específicos do KDE para forçar o recarregamento instantâneo do Kicker/Kickoff
         dbus_payloads = [
             [
                 "qdbus",
@@ -1363,17 +1408,19 @@ class MainWindow(Gtk.ApplicationWindow):
                     pass
 
     def generate_desktop_file(self, app):
-        """Gera o arquivo .desktop aplicando isolamento real fino de janelas e perfis"""
+        """Gera o arquivo .desktop implementando o isolamento real de dados na v1.5.9"""
         desktop_dir = Path.home() / ".local/share/applications"
         desktop_dir.mkdir(parents=True, exist_ok=True)
         filename = self.get_desktop_path(app)
 
+        # Coleta das configurações
         browser_choice = app.get("browser", "default")
         window_mode = app.get("window_mode", self.config.get("window_mode", True))
 
+        # Criação do diretório exclusivo para Cookies, Cache e Sessão deste WebApp (Novo na v1.5.9)
         startup_class = f"voidbr-webapp-{app['id']}"
         profile_dir = PROFILES_DIR / f"app-{app['id']}"
-        if window_mode:
+        if window_mode:  # Só cria o perfil separado se o usuário quiser o app isolado
             profile_dir.mkdir(parents=True, exist_ok=True)
 
         icon_to_use = (
@@ -1395,33 +1442,44 @@ class MainWindow(Gtk.ApplicationWindow):
         browsers_map = self._get_installed_browsers()
         friendly_browser = browsers_map.get(browser_choice, "Web")
 
+        # Nomenclatura para o menu
         if browser_choice == "default":
             display_name = app["name"]
         else:
             display_name = f"{app['name']} ({friendly_browser})"
 
+        # --- LÓGICA DE ISOLAMENTO REAL DE DIRETÓRIO NO .DESKTOP (v1.5.9) ---
         if not exec_binary:
+            # Fallback xdg-open genérico: Inserimos hash na URL apenas para desambiguação no KDE
             url_unique = f"{url}#voidbr-webapp-{app['id']}"
             exec_command = f'xdg-open "{url_unique}"'
+
         elif browser_choice == "firefox":
             if window_mode:
+                # Firefox: Força criação/uso de um perfil dedicado
                 exec_command = (
                     f'{exec_binary} -profile "{profile_dir}" --new-window "{url}"'
                 )
             else:
                 exec_command = f'{exec_binary} "{url}"'
+
         elif browser_choice == "opera":
             if window_mode:
+                # Opera: Força janela limpa E diretório de dados/cookies 100% isolado
                 exec_command = f'{exec_binary} --user-data-dir="{profile_dir}" --new-window "{url}"'
             else:
                 exec_command = f'{exec_binary} "{url}"'
+
         else:
-            # Motores baseados em Chromium (Chrome, Brave, Chromium, Vivaldi, Edge) com diferenciação fina
+            # Google Chrome, Brave, Chromium, Vivaldi, Microsoft Edge (Motores baseados em Chromium)
             if window_mode:
+                # Força janela limpa E diretório de dados/cookies 100% isolado (Flags combinadas da v1.5.7 + v1.5.9)
                 exec_command = f'{exec_binary} --class="{startup_class}" --user-data-dir="{profile_dir}" --app="{url}"'
             else:
+                # Mesmo sem modo app, isolamos os dados se houver executável definido
                 exec_command = f'{exec_binary} --class="{startup_class}" --user-data-dir="{profile_dir}" "{url}"'
 
+        # Categorias
         base_cat = app.get("category", self.config.get("default_category", ""))
         final_categories = (
             f"X-VoidBR-WebApps;{base_cat}" if base_cat else "X-VoidBR-WebApps;"
@@ -1429,6 +1487,7 @@ class MainWindow(Gtk.ApplicationWindow):
         if not final_categories.endswith(";"):
             final_categories += ";"
 
+        # Escrita do arquivo .desktop seguindo o padrão Freedesktop/KDE
         desktop = f"""[Desktop Entry]
 Type=Application
 Name={display_name}
@@ -1450,16 +1509,141 @@ Categories={final_categories}
         if app:
             self.generate_desktop_file(app)
 
+    def on_about(self, button):
+        about = Gtk.AboutDialog(
+            transient_for=self,
+            modal=True,
+            program_name="VoidBR WebApps",
+            version=__version__,
+            copyright="© 2026 Comunidade VoidBR",
+            license_type=Gtk.License.GPL_3_0,
+            comments=_("Gerenciador oficial de WebApps para o ecossistema VoidBR."),
+            website="https://github.com/voidlinuxbr/voidbr-webapps",
+            website_label=_("Website do Projeto"),
+            authors=["Vilmar Catafesta <vcatafesta@gmail.com>"],
+            artists=[
+                "Vilmar Catafesta <vcatafesta@gmail.com>",
+                "Eduardo Charquero <eduardocharquero@gmail.com>",
+            ],
+        )
+        about.set_logo_icon_name("voidbr")
+        about.present()
+
     def on_backup(self, button):
-        """Abre a caixa de diálogo integrada, estruturando o tar para portabilidade entre usuários"""
+        """Abre a caixa de diálogo clássica GTK4 integrada, estruturando o tar para extração direta na Home"""
+        import os
+        from pathlib import Path
         import tarfile
 
         user_home = Path.home()
+
+        # Cria o FileChooserDialog clássico
         dialog = Gtk.FileChooserDialog(
             title=_("Salvar Backup dos WebApps"),
             transient_for=self,
             action=Gtk.FileChooserAction.SAVE,
         )
+
+        dialog.add_button(_("Cancelar"), Gtk.ResponseType.CANCEL)
+        dialog.add_button(_("Salvar"), Gtk.ResponseType.ACCEPT)
+
+        # Define a pasta inicial forçada para a Home do utilizador comum
+        home_gio_file = Gio.File.new_for_path(str(user_home))
+        dialog.set_current_folder(home_gio_file)
+
+        # Sugere o nome do arquivo padrão com data/hora
+        dialog.set_current_name(
+            f"voidbr-webapps-backup-{time.strftime('%Y%m%d-%H%M%S')}.tar.gz"
+        )
+
+        # Adiciona o filtro para ficheiros .tar.gz
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name(_("Arquivo de Backup (*.tar.gz)"))
+        file_filter.add_pattern("*.tar.gz")
+        dialog.add_filter(file_filter)
+
+        def on_response(dialog, response_id):
+            if response_id == Gtk.ResponseType.ACCEPT:
+                target_file = dialog.get_file()
+                dest_path = target_file.get_path()
+                dialog.destroy()
+
+                def worker():
+                    try:
+                        real_app_dir = user_home / ".local/share" / APP_NAME
+                        apps_local_dir = user_home / ".local/share/applications"
+
+                        # Cria o arquivo temporário isolado em /tmp
+                        temp_backup = (
+                            Path("/tmp")
+                            / f"voidbr-webapps-temp-{time.time_ns()}.tar.gz"
+                        )
+
+                        if not real_app_dir.exists():
+                            raise FileNotFoundError(
+                                f"Diretório de dados não encontrado em: {real_app_dir}"
+                            )
+
+                        with tarfile.open(temp_backup, "w:gz") as tar:
+                            # 1. Adiciona a pasta de dados mapeando para .local/share/voidbr-webapps
+                            tar.add(real_app_dir, arcname=f".local/share/{APP_NAME}")
+
+                            # 2. Busca e adiciona apenas os arquivos .desktop gerados mapeando para .local/share/applications
+                            if apps_local_dir.exists():
+                                for desktop_file in apps_local_dir.glob(
+                                    "voidbr-webapp-*.desktop"
+                                ):
+                                    tar.add(
+                                        desktop_file,
+                                        arcname=f".local/share/applications/{desktop_file.name}",
+                                    )
+
+                        # Move o arquivo temporário do /tmp para o local escolhido
+                        shutil.move(str(temp_backup), dest_path)
+
+                        def success_ui():
+                            alert = Gtk.AlertDialog(
+                                message=_("🎉 Backup completo concluído com sucesso!")
+                            )
+                            alert.show(self)
+
+                        GLib.idle_add(success_ui)
+                    except Exception as e:
+                        if "temp_backup" in locals() and temp_backup.exists():
+                            try:
+                                os.unlink(temp_backup)
+                            except:
+                                pass
+
+                        def error_ui():
+                            alert = Gtk.AlertDialog(
+                                message=_("🚫 Falha ao gerar backup"), detail=str(e)
+                            )
+                            alert.show(self)
+
+                        GLib.idle_add(error_ui)
+
+                threading.Thread(target=worker, daemon=True).start()
+            else:
+                dialog.destroy()
+
+        dialog.connect("response", on_response)
+        dialog.present()
+
+    def on_backup(self, button):
+        """Abre a caixa de diálogo clássica GTK4 integrada, estruturando o tar para extração direta na Home"""
+        import os
+        from pathlib import Path
+        import tarfile
+
+        user_home = Path.home()
+
+        dialog = Gtk.FileChooserDialog(
+            title=_("Salvar Backup dos WebApps"),
+            transient_for=self,
+            action=Gtk.FileChooserAction.SAVE,
+        )
+
         dialog.add_button(_("Cancelar"), Gtk.ResponseType.CANCEL)
         dialog.add_button(_("Salvar"), Gtk.ResponseType.ACCEPT)
 
@@ -1484,6 +1668,7 @@ Categories={final_categories}
                     try:
                         real_app_dir = user_home / ".local/share" / APP_NAME
                         apps_local_dir = user_home / ".local/share/applications"
+
                         temp_backup = (
                             Path("/tmp")
                             / f"voidbr-webapps-temp-{time.time_ns()}.tar.gz"
@@ -1496,6 +1681,7 @@ Categories={final_categories}
 
                         with tarfile.open(temp_backup, "w:gz") as tar:
                             tar.add(real_app_dir, arcname=f".local/share/{APP_NAME}")
+
                             if apps_local_dir.exists():
                                 for desktop_file in apps_local_dir.glob(
                                     "voidbr-webapp-*.desktop"
@@ -1507,11 +1693,13 @@ Categories={final_categories}
 
                         shutil.move(str(temp_backup), dest_path)
 
+                        # Injeta a mensagem de sucesso de volta na Thread principal do GTK
                         def success_ui():
-                            self.alert = Gtk.AlertDialog(
+                            alert = Gtk.AlertDialog(
                                 message=_("🎉 Backup completo concluído com sucesso!")
                             )
-                            self.alert.show(self)
+                            alert.show(self)
+
                         GLib.idle_add(success_ui)
 
                     except Exception as e:
@@ -1520,12 +1708,16 @@ Categories={final_categories}
                                 os.unlink(temp_backup)
                             except:
                                 pass
+
                         def error_ui():
-                            self.alert = Gtk.AlertDialog(
+                            alert = Gtk.AlertDialog(
                                 message=_("🚫 Falha ao gerar backup"), detail=str(e)
                             )
-                            self.alert.show(self)
+                            alert.show(self)
+
                         GLib.idle_add(error_ui)
+                        呈现_ui = lambda: GLib.idle_add(error_ui)
+                        呈现_ui()
 
                 threading.Thread(target=worker, daemon=True).start()
             else:
@@ -1535,15 +1727,17 @@ Categories={final_categories}
         dialog.present()
 
     def on_restore(self, button):
-        """Abre a caixa de diálogo para restaurar o backup com refresh síncrono e escopo estável"""
+        """Abre a caixa de diálogo clássica GTK4 para selecionar e restaurar o backup com refresh automático"""
         import tarfile
 
         user_home = Path.home()
+
         dialog = Gtk.FileChooserDialog(
             title=_("Selecionar Arquivo de Backup"),
             transient_for=self,
             action=Gtk.FileChooserAction.OPEN,
         )
+
         dialog.add_button(_("Cancelar"), Gtk.ResponseType.CANCEL)
         dialog.add_button(_("Restaurar"), Gtk.ResponseType.ACCEPT)
 
@@ -1571,38 +1765,42 @@ Categories={final_categories}
                         with tarfile.open(backup_path, "r:gz") as tar:
                             tar.extractall(path=user_home)
 
+                        # Força o refresh de dados E a UI de forma síncrona na thread principal do GTK
                         def success_ui():
-                            # 1. Recarrega o JSON para a memória
+                            # 1. Lê novamente o arquivo JSON restaurado para atualizar self.apps na memória
                             self.apps = self.load_apps()
 
-                            # 2. Desmarca ponteiros antigos da seleção
+                            # 2. Desmarca seleções antigas para evitar crashes de ponteiros
                             if (
                                 hasattr(self, "selection")
                                 and self.selection is not None
                             ):
                                 self.selection.unselect_all()
 
-                            # 3. Reconstrói a ColumnView dinamicamente
+                            # 3. Limpa a ListStore antiga e injeta as novas linhas na ColumnView
                             self.refresh()
 
-                            # 4. Reconstrói/atualiza caches de atalhos e menus
+                            # 4. Atualiza os caches de atalhos e menus no sistema operacional (.desktop)
                             self.update_desktop_caches()
 
-                            # 5. Dispara o alerta prendendo o objeto em self.alert
+                            # 5. Apresenta o banner visual mantendo a referência viva em self.alert para evitar coleta de lixo
                             self.alert = Gtk.AlertDialog(
                                 message=_(
                                     "🎉 Restauração concluída com sucesso e dados atualizados!"
                                 )
                             )
                             self.alert.show(self)
+
                         GLib.idle_add(success_ui)
 
                     except Exception as e:
+
                         def error_ui():
                             self.alert = Gtk.AlertDialog(
                                 message=_("🚫 Falha ao restaurar backup"), detail=str(e)
                             )
                             self.alert.show(self)
+
                         GLib.idle_add(error_ui)
 
                 threading.Thread(target=worker, daemon=True).start()
@@ -1611,26 +1809,6 @@ Categories={final_categories}
 
         dialog.connect("response", on_response)
         dialog.present()
-
-    def on_about(self, button):
-        about = Gtk.AboutDialog(
-            transient_for=self,
-            modal=True,
-            program_name="VoidBR WebApps",
-            version=__version__,
-            copyright="© 2026 Comunidade VoidBR",
-            license_type=Gtk.License.GPL_3_0,
-            comments=_("Gerenciador oficial de WebApps para o ecossistema VoidBR."),
-            website="https://github.com/voidlinuxbr/voidbr-webapps",
-            website_label=_("Website do Projeto"),
-            authors=["Vilmar Catafesta <vcatafesta@gmail.com>"],
-            artists=[
-                "Vilmar Catafesta <vcatafesta@gmail.com>",
-                "Eduardo Charquero <eduardocharquero@gmail.com>",
-            ],
-        )
-        about.set_logo_icon_name("voidbr")
-        about.present()
 
 
 if __name__ == "__main__":
