@@ -3,8 +3,8 @@
 #
 #   voidbr-webapps
 #   Created: sex 05 jun 2026 13:02:13 -04
-#   Altered: qui 11 jun 2026 23:40:00 -04
-#   Updated: qui 11 jun 2026 23:40:00 -04
+#   Altered: qui 11 jun 2026 23:30:00 -04
+#   Updated: qui 11 jun 2026 23:30:00 -04
 #
 #   Copyright (c) 2019-2026, Vilmar Catafesta <vcatafesta@gmail.com>
 #   Copyright (c) 2019-2026, ChiliLinux Development Team <https://chililinux.com> <https://github.com/chililinux>
@@ -12,7 +12,6 @@
 #   All rights reserved.
 #
 #   ChangeLog:
-#   - v1.5.6 (2026-06-11): Corrigida falha de atualização de menus no KDE Plasma. Implementada sincronização forçada de I/O, invalidação de timestamp do diretório local e envio de sinais D-Bus para o recarregamento imediato do painel/menu (Kicker/Kickoff).
 #   - v1.5.5 (2026-06-11): Criada função unificada 'update_desktop_caches' para atualização de cache de menus (.desktop), tratando de forma robusta o comportamento exigente do KDE Plasma (kbuildsycoca) em conjunto com ambientes Freedesktop genéricos (update-desktop-database). Aplicado de forma consistente na criação, remoção e edição de WebApps.
 #   - v1.5.4 (2026-06-11): Corrigido comportamento do menu de contexto (clique direito) para ser acionado em qualquer lugar da linha selecionada na ColumnView.
 #   - v1.5.3 (2026-06-11): Adicionado botão para escolher ícone personalizado na janela de edição de WebApps.
@@ -61,7 +60,6 @@ from pathlib import Path
 import threading
 import shutil
 import gettext
-import time
 
 import gi
 
@@ -69,7 +67,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.5.6"
+__version__ = "1.5.5"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -1238,19 +1236,6 @@ class MainWindow(Gtk.ApplicationWindow):
         """Atualiza de forma robusta os caches de menus e atalhos (.desktop) para qualquer DE (GNOME, Xfce, KDE Plasma, etc.)"""
         apps_local_dir = Path.home() / ".local/share/applications"
 
-        # Força flushing de I/O para o disco antes de chamar os comandos externos
-        try:
-            os.sync()
-        except:
-            pass
-
-        # Invalida o timestamp do diretório local para obrigar o KDirWatch do KDE a notar mudanças
-        try:
-            now = time.time()
-            os.utime(str(apps_local_dir), (now, now))
-        except:
-            pass
-
         # 1. Freedesktop Standard: reconstrói base local para GNOME, Xfce, Cinnamon, Mate, etc.
         if shutil.which("update-desktop-database"):
             try:
@@ -1274,7 +1259,7 @@ class MainWindow(Gtk.ApplicationWindow):
         except Exception:
             pass
 
-        # 3. Mandatório para KDE Plasma: força reconstrução profunda do cache binário do KService
+        # 3. Mandatório para KDE Plasma: força reconstrução profunda do cache binário do KService e envia sinais DBus
         for cmd in ("kbuildsycoca6", "kbuildsycoca5"):
             exe = shutil.which(cmd)
             if exe:
@@ -1288,18 +1273,6 @@ class MainWindow(Gtk.ApplicationWindow):
                 except Exception:
                     pass
                 break
-
-        # 4. Envio de sinais D-Bus específicos do KDE para forçar o recarregamento instantâneo do Kicker/Kickoff
-        dbus_payloads = [
-            ["qdbus", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.refreshCurrentShellPage"],
-            ["dbus-send", "--session", "--dest=org.freedesktop.menu", "/org/freedesktop/menu", "org.freedesktop.menu.changed"]
-        ]
-        for payload in dbus_payloads:
-            if shutil.which(payload[0]):
-                try:
-                    subprocess.run(payload, check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                except:
-                    pass
 
     def generate_desktop_file(self, app):
         desktop_dir = Path.home() / ".local/share/applications"
