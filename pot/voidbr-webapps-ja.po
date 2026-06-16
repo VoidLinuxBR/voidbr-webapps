@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-06 20:19-0400\n"
-"PO-Revision-Date: 2026-06-06 20:19-0400\n"
+"POT-Creation-Date: 2026-06-16 01:30-0400\n"
+"PO-Revision-Date: 2026-06-16 01:30-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,169 +14,178 @@ msgstr ""
 "Language: ja\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:174
+#: usr/local/bin/voidbr-webapps:188
 msgid "Adicionar"
 msgstr "追加するには"
 
-#: usr/local/bin/voidbr-webapps:178
+#: usr/local/bin/voidbr-webapps:192
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "新しい WebApp を追加し、そのショートカットを自動的に生成します"
 
-#: usr/local/bin/voidbr-webapps:182 usr/local/bin/voidbr-webapps:409
+#: usr/local/bin/voidbr-webapps:196 usr/local/bin/voidbr-webapps:448
 msgid "Remover"
 msgstr "取り除く"
 
-#: usr/local/bin/voidbr-webapps:186
+#: usr/local/bin/voidbr-webapps:200
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "選択した WebApp を削除し、そのショートカットをシステムから削除します"
 
-#: usr/local/bin/voidbr-webapps:190 usr/local/bin/voidbr-webapps:408
+#: usr/local/bin/voidbr-webapps:204 usr/local/bin/voidbr-webapps:447
 msgid "Gerar Atalho"
 msgstr "ショートカットの生成"
 
-#: usr/local/bin/voidbr-webapps:194
+#: usr/local/bin/voidbr-webapps:208
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "選択した WebApp ショートカット ファイルを手動で再生成します"
 
-#: usr/local/bin/voidbr-webapps:203
+#: usr/local/bin/voidbr-webapps:217
 msgid "Configurações do Aplicativo"
 msgstr "アプリケーション設定"
 
-#: usr/local/bin/voidbr-webapps:206
+#: usr/local/bin/voidbr-webapps:223
+msgid "Fazer Backup Completo (Dados e Atalhos .desktop)"
+msgstr "フルバックアップを作成する (デスクトップデータとショートカット)"
+
+#: usr/local/bin/voidbr-webapps:229
+msgid "Restaurar Backup Completo"
+msgstr "フルバックアップを復元する"
+
+#: usr/local/bin/voidbr-webapps:232
 msgid "Sobre"
 msgstr "の上"
 
-#: usr/local/bin/voidbr-webapps:210
+#: usr/local/bin/voidbr-webapps:236
 msgid "Ver informações, desenvolvedores e créditos do projeto"
 msgstr "プロジェクト情報、開発者、クレジットを表示する"
 
-#: usr/local/bin/voidbr-webapps:214
+#: usr/local/bin/voidbr-webapps:240
 msgid "Sair"
 msgstr "外出する"
 
-#: usr/local/bin/voidbr-webapps:217
+#: usr/local/bin/voidbr-webapps:243
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "VoidBR WebApps マネージャーを閉じます"
 
-#: usr/local/bin/voidbr-webapps:315
+#: usr/local/bin/voidbr-webapps:359
 msgid "Aplicativo"
 msgstr "応用"
 
-#: usr/local/bin/voidbr-webapps:331
+#: usr/local/bin/voidbr-webapps:375
 msgid "Navegador"
 msgstr "ブラウザ"
 
-#: usr/local/bin/voidbr-webapps:349
+#: usr/local/bin/voidbr-webapps:393
 msgid "URL"
 msgstr "URL"
 
-#: usr/local/bin/voidbr-webapps:406
+#: usr/local/bin/voidbr-webapps:445
 msgid "Executar"
 msgstr "実行するには"
 
-#: usr/local/bin/voidbr-webapps:407
+#: usr/local/bin/voidbr-webapps:446
 msgid "Editar"
 msgstr "編集"
 
-#: usr/local/bin/voidbr-webapps:443
+#: usr/local/bin/voidbr-webapps:484
 msgid "Navegador Padrão do Sistema (xdg-open)"
 msgstr "システムのデフォルトブラウザ (xdg-open)"
 
-#: usr/local/bin/voidbr-webapps:678 usr/local/bin/voidbr-webapps:725
+#: usr/local/bin/voidbr-webapps:732
+msgid "🚫 Nenhum navegador disponível"
+msgstr "🚫 使用可能なブラウザがありません"
+
+#: usr/local/bin/voidbr-webapps:734
 msgid ""
 "Todos os navegadores disponíveis já estão sendo utilizados para esta URL."
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:723
-msgid "🚫 Nenhum navegador disponível"
-msgstr "🚫 使用可能なブラウザがありません"
-
-#: usr/local/bin/voidbr-webapps:750
+#: usr/local/bin/voidbr-webapps:757
 msgid "Imagens (*.png, *.jpg, *.svg)"
 msgstr "画像 (*.png、*.jpg、*.svg)"
 
-#: usr/local/bin/voidbr-webapps:757
+#: usr/local/bin/voidbr-webapps:764
 msgid "Selecionar Ícone Personalizado"
 msgstr "カスタムアイコンの選択"
 
-#: usr/local/bin/voidbr-webapps:768
+#: usr/local/bin/voidbr-webapps:775
 msgid "Buscando ícone do site..."
 msgstr "サイトアイコンを検索中..."
 
-#: usr/local/bin/voidbr-webapps:808
+#: usr/local/bin/voidbr-webapps:814
 msgid "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
 msgstr "⚠️ URL アイコンが見つかりません。システムのデフォルトアイコンを使用します。"
 
-#: usr/local/bin/voidbr-webapps:818
+#: usr/local/bin/voidbr-webapps:823
 msgid "Configurações"
 msgstr "設定"
 
-#: usr/local/bin/voidbr-webapps:849
+#: usr/local/bin/voidbr-webapps:854
 msgid "Densidade da Lista:"
 msgstr "リスト密度:"
 
-#: usr/local/bin/voidbr-webapps:851
+#: usr/local/bin/voidbr-webapps:856
 msgid "Confortável (Larga)"
 msgstr "快適（大）"
 
-#: usr/local/bin/voidbr-webapps:852
+#: usr/local/bin/voidbr-webapps:857
 msgid "Compacto (Estreita)"
 msgstr "コンパクト（狭い）"
 
-#: usr/local/bin/voidbr-webapps:856
+#: usr/local/bin/voidbr-webapps:861
 msgid "Interface"
 msgstr "インタフェース"
 
-#: usr/local/bin/voidbr-webapps:871
+#: usr/local/bin/voidbr-webapps:875
 msgid "Navegador Padrão:"
 msgstr "デフォルトのブラウザ:"
 
-#: usr/local/bin/voidbr-webapps:879
+#: usr/local/bin/voidbr-webapps:882
 msgid "Categorias Adicionais:"
 msgstr "追加のカテゴリ:"
 
-#: usr/local/bin/voidbr-webapps:882
+#: usr/local/bin/voidbr-webapps:885
 msgid "Nenhuma (Apenas X-VoidBR-WebApps)"
 msgstr "なし (X-VoidBR-WebApps のみ)"
 
-#: usr/local/bin/voidbr-webapps:883
+#: usr/local/bin/voidbr-webapps:886
 msgid "Internet / Navegadores"
 msgstr "インターネット/ブラウザ"
 
-#: usr/local/bin/voidbr-webapps:884
+#: usr/local/bin/voidbr-webapps:887
 msgid "Desenvolvimento"
 msgstr "発達"
 
-#: usr/local/bin/voidbr-webapps:885
+#: usr/local/bin/voidbr-webapps:888
 msgid "Escritório"
 msgstr "机"
 
-#: usr/local/bin/voidbr-webapps:886
+#: usr/local/bin/voidbr-webapps:889
 msgid "Gráficos"
 msgstr "グラフィックス"
 
-#: usr/local/bin/voidbr-webapps:887
+#: usr/local/bin/voidbr-webapps:890
 msgid "Jogos"
 msgstr "ゲーム"
 
-#: usr/local/bin/voidbr-webapps:902
+#: usr/local/bin/voidbr-webapps:904
 msgid "Resolução do Ícone:"
 msgstr "アイコンの解像度:"
 
-#: usr/local/bin/voidbr-webapps:912
+#: usr/local/bin/voidbr-webapps:913
 msgid "Modo Janela Isolada:"
 msgstr "分離ウィンドウ モード:"
 
-#: usr/local/bin/voidbr-webapps:919
+#: usr/local/bin/voidbr-webapps:920
 msgid "Padrões de Criação"
 msgstr "飼育基準"
 
-#: usr/local/bin/voidbr-webapps:930 usr/local/bin/voidbr-webapps:1068
+#: usr/local/bin/voidbr-webapps:930 usr/local/bin/voidbr-webapps:1066
+#: usr/local/bin/voidbr-webapps:1481 usr/local/bin/voidbr-webapps:1565
 msgid "Cancelar"
 msgstr "キャンセル"
 
-#: usr/local/bin/voidbr-webapps:933 usr/local/bin/voidbr-webapps:1071
-#: usr/local/bin/voidbr-webapps:1191
+#: usr/local/bin/voidbr-webapps:933 usr/local/bin/voidbr-webapps:1069
+#: usr/local/bin/voidbr-webapps:1220 usr/local/bin/voidbr-webapps:1482
 msgid "Salvar"
 msgstr "保存"
 
@@ -188,34 +197,70 @@ msgstr "新しいウェブアプリ"
 msgid "Nome do App"
 msgstr "アプリ名"
 
-#: usr/local/bin/voidbr-webapps:988 usr/local/bin/voidbr-webapps:1155
+#: usr/local/bin/voidbr-webapps:987 usr/local/bin/voidbr-webapps:1156
 msgid "URL:"
 msgstr "URL:"
 
-#: usr/local/bin/voidbr-webapps:992 usr/local/bin/voidbr-webapps:1157
+#: usr/local/bin/voidbr-webapps:991 usr/local/bin/voidbr-webapps:1158
 msgid "Nome:"
 msgstr "名前："
 
-#: usr/local/bin/voidbr-webapps:996 usr/local/bin/voidbr-webapps:1159
+#: usr/local/bin/voidbr-webapps:995 usr/local/bin/voidbr-webapps:1160
 msgid "Navegador:"
 msgstr "ブラウザ："
 
-#: usr/local/bin/voidbr-webapps:999
+#: usr/local/bin/voidbr-webapps:998 usr/local/bin/voidbr-webapps:1163
 msgid "Ícone:"
 msgstr "アイコン："
 
-#: usr/local/bin/voidbr-webapps:1008
+#: usr/local/bin/voidbr-webapps:1007 usr/local/bin/voidbr-webapps:1176
 msgid "Escolher Ícone..."
 msgstr "アイコンを選択..."
 
-#: usr/local/bin/voidbr-webapps:1126
+#: usr/local/bin/voidbr-webapps:1125
 msgid "Editar WebApp"
 msgstr "Web アプリの編集"
 
-#: usr/local/bin/voidbr-webapps:1330
+#: usr/local/bin/voidbr-webapps:1224
+msgid "Salvar ✓"
+msgstr "保存 ✓"
+
+#: usr/local/bin/voidbr-webapps:1477
+msgid "Salvar Backup dos WebApps"
+msgstr "保存 2 つの WebApp をバックアップします"
+
+#: usr/local/bin/voidbr-webapps:1491 usr/local/bin/voidbr-webapps:1572
+msgid "Arquivo de Backup (*.tar.gz)"
+msgstr "バックアップファイル (*.tar.gz)"
+
+#: usr/local/bin/voidbr-webapps:1530
+msgid "🎉 Backup completo concluído com sucesso!"
+msgstr "🎉 完全バックアップが正常に完了しました。"
+
+#: usr/local/bin/voidbr-webapps:1543
+msgid "🚫 Falha ao gerar backup"
+msgstr "🚫 バックアップの生成に失敗しました"
+
+#: usr/local/bin/voidbr-webapps:1561
+msgid "Selecionar Arquivo de Backup"
+msgstr "バックアップファイルの選択"
+
+#: usr/local/bin/voidbr-webapps:1566
+msgid "Restaurar"
+msgstr "復元する"
+
+#: usr/local/bin/voidbr-webapps:1612
+msgid "🎉 Restauração concluída com sucesso e dados atualizados!"
+msgstr "🎉 復元が正常に完了し、データが更新されました!"
+
+#: usr/local/bin/voidbr-webapps:1621
+msgid "🚫 Falha ao restaurar backup"
+msgstr "🚫 バックアップの復元に失敗しました"
+
+#: usr/local/bin/voidbr-webapps:1641
 msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
 msgstr "VoidBR エコシステムの公式 WebApps マネージャー。"
 
-#: usr/local/bin/voidbr-webapps:1332
+#: usr/local/bin/voidbr-webapps:1643
 msgid "Website do Projeto"
 msgstr "プロジェクトのウェブサイト"

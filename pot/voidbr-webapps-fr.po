@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-06 20:19-0400\n"
-"PO-Revision-Date: 2026-06-06 20:19-0400\n"
+"POT-Creation-Date: 2026-06-16 01:30-0400\n"
+"PO-Revision-Date: 2026-06-16 01:30-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,169 +14,178 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:174
+#: usr/local/bin/voidbr-webapps:188
 msgid "Adicionar"
 msgstr "Pour ajouter"
 
-#: usr/local/bin/voidbr-webapps:178
+#: usr/local/bin/voidbr-webapps:192
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "Ajouter une nouvelle WebApp et générer automatiquement son raccourci"
 
-#: usr/local/bin/voidbr-webapps:182 usr/local/bin/voidbr-webapps:409
+#: usr/local/bin/voidbr-webapps:196 usr/local/bin/voidbr-webapps:448
 msgid "Remover"
 msgstr "retirer"
 
-#: usr/local/bin/voidbr-webapps:186
+#: usr/local/bin/voidbr-webapps:200
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "Supprimez la WebApp sélectionnée et supprimez son raccourci du système"
 
-#: usr/local/bin/voidbr-webapps:190 usr/local/bin/voidbr-webapps:408
+#: usr/local/bin/voidbr-webapps:204 usr/local/bin/voidbr-webapps:447
 msgid "Gerar Atalho"
 msgstr "Générer un raccourci"
 
-#: usr/local/bin/voidbr-webapps:194
+#: usr/local/bin/voidbr-webapps:208
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "Régénérer manuellement le fichier de raccourci WebApp sélectionné"
 
-#: usr/local/bin/voidbr-webapps:203
+#: usr/local/bin/voidbr-webapps:217
 msgid "Configurações do Aplicativo"
 msgstr "Paramètres des applications"
 
-#: usr/local/bin/voidbr-webapps:206
+#: usr/local/bin/voidbr-webapps:223
+msgid "Fazer Backup Completo (Dados e Atalhos .desktop)"
+msgstr "Effectuer une sauvegarde complète (données du bureau et raccourcis)"
+
+#: usr/local/bin/voidbr-webapps:229
+msgid "Restaurar Backup Completo"
+msgstr "Restaurer la sauvegarde complète"
+
+#: usr/local/bin/voidbr-webapps:232
 msgid "Sobre"
 msgstr "Sur"
 
-#: usr/local/bin/voidbr-webapps:210
+#: usr/local/bin/voidbr-webapps:236
 msgid "Ver informações, desenvolvedores e créditos do projeto"
 msgstr "Afficher les informations sur le projet, les développeurs et les crédits"
 
-#: usr/local/bin/voidbr-webapps:214
+#: usr/local/bin/voidbr-webapps:240
 msgid "Sair"
 msgstr "Pour sortir"
 
-#: usr/local/bin/voidbr-webapps:217
+#: usr/local/bin/voidbr-webapps:243
 msgid "Fechar o gerenciador VoidBR WebApps"
-msgstr "Fermez le gestionnaire de VoidBR WebApps"
+msgstr "Fermez le gestionnaire VoidBR WebApps"
 
-#: usr/local/bin/voidbr-webapps:315
+#: usr/local/bin/voidbr-webapps:359
 msgid "Aplicativo"
 msgstr "Application"
 
-#: usr/local/bin/voidbr-webapps:331
+#: usr/local/bin/voidbr-webapps:375
 msgid "Navegador"
 msgstr "Navigateur"
 
-#: usr/local/bin/voidbr-webapps:349
+#: usr/local/bin/voidbr-webapps:393
 msgid "URL"
 msgstr "URL"
 
-#: usr/local/bin/voidbr-webapps:406
+#: usr/local/bin/voidbr-webapps:445
 msgid "Executar"
 msgstr "Pour exécuter"
 
-#: usr/local/bin/voidbr-webapps:407
+#: usr/local/bin/voidbr-webapps:446
 msgid "Editar"
 msgstr "Modifier"
 
-#: usr/local/bin/voidbr-webapps:443
+#: usr/local/bin/voidbr-webapps:484
 msgid "Navegador Padrão do Sistema (xdg-open)"
 msgstr "Navigateur système par défaut (xdg-open)"
 
-#: usr/local/bin/voidbr-webapps:678 usr/local/bin/voidbr-webapps:725
+#: usr/local/bin/voidbr-webapps:732
+msgid "🚫 Nenhum navegador disponível"
+msgstr "🚫 Aucun navigateur disponible"
+
+#: usr/local/bin/voidbr-webapps:734
 msgid ""
 "Todos os navegadores disponíveis já estão sendo utilizados para esta URL."
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:723
-msgid "🚫 Nenhum navegador disponível"
-msgstr "🚫 Aucun navigateur disponible"
-
-#: usr/local/bin/voidbr-webapps:750
+#: usr/local/bin/voidbr-webapps:757
 msgid "Imagens (*.png, *.jpg, *.svg)"
 msgstr "Images (*.png, *.jpg, *.svg)"
 
-#: usr/local/bin/voidbr-webapps:757
+#: usr/local/bin/voidbr-webapps:764
 msgid "Selecionar Ícone Personalizado"
 msgstr "Sélectionnez une icône personnalisée"
 
-#: usr/local/bin/voidbr-webapps:768
+#: usr/local/bin/voidbr-webapps:775
 msgid "Buscando ícone do site..."
 msgstr "Icône du site de recherche..."
 
-#: usr/local/bin/voidbr-webapps:808
+#: usr/local/bin/voidbr-webapps:814
 msgid "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
 msgstr "⚠️ Icône URL introuvable. Utilisation de l'icône par défaut du système."
 
-#: usr/local/bin/voidbr-webapps:818
+#: usr/local/bin/voidbr-webapps:823
 msgid "Configurações"
 msgstr "Paramètres"
 
-#: usr/local/bin/voidbr-webapps:849
+#: usr/local/bin/voidbr-webapps:854
 msgid "Densidade da Lista:"
 msgstr "Densité de la liste :"
 
-#: usr/local/bin/voidbr-webapps:851
+#: usr/local/bin/voidbr-webapps:856
 msgid "Confortável (Larga)"
 msgstr "Confortable (grand)"
 
-#: usr/local/bin/voidbr-webapps:852
+#: usr/local/bin/voidbr-webapps:857
 msgid "Compacto (Estreita)"
 msgstr "Compact (étroit)"
 
-#: usr/local/bin/voidbr-webapps:856
+#: usr/local/bin/voidbr-webapps:861
 msgid "Interface"
 msgstr "Interface"
 
-#: usr/local/bin/voidbr-webapps:871
+#: usr/local/bin/voidbr-webapps:875
 msgid "Navegador Padrão:"
 msgstr "Navigateur par défaut :"
 
-#: usr/local/bin/voidbr-webapps:879
+#: usr/local/bin/voidbr-webapps:882
 msgid "Categorias Adicionais:"
 msgstr "Catégories supplémentaires :"
 
-#: usr/local/bin/voidbr-webapps:882
+#: usr/local/bin/voidbr-webapps:885
 msgid "Nenhuma (Apenas X-VoidBR-WebApps)"
 msgstr "Aucun (uniquement X-VoidBR-WebApps)"
 
-#: usr/local/bin/voidbr-webapps:883
+#: usr/local/bin/voidbr-webapps:886
 msgid "Internet / Navegadores"
 msgstr "Internet / Navigateurs"
 
-#: usr/local/bin/voidbr-webapps:884
+#: usr/local/bin/voidbr-webapps:887
 msgid "Desenvolvimento"
 msgstr "Développement"
 
-#: usr/local/bin/voidbr-webapps:885
+#: usr/local/bin/voidbr-webapps:888
 msgid "Escritório"
 msgstr "Bureau"
 
-#: usr/local/bin/voidbr-webapps:886
+#: usr/local/bin/voidbr-webapps:889
 msgid "Gráficos"
 msgstr "Graphique"
 
-#: usr/local/bin/voidbr-webapps:887
+#: usr/local/bin/voidbr-webapps:890
 msgid "Jogos"
 msgstr "Jeux"
 
-#: usr/local/bin/voidbr-webapps:902
+#: usr/local/bin/voidbr-webapps:904
 msgid "Resolução do Ícone:"
 msgstr "Résolution de l'icône :"
 
-#: usr/local/bin/voidbr-webapps:912
+#: usr/local/bin/voidbr-webapps:913
 msgid "Modo Janela Isolada:"
 msgstr "Mode fenêtre isolée :"
 
-#: usr/local/bin/voidbr-webapps:919
+#: usr/local/bin/voidbr-webapps:920
 msgid "Padrões de Criação"
 msgstr "Normes d'élevage"
 
-#: usr/local/bin/voidbr-webapps:930 usr/local/bin/voidbr-webapps:1068
+#: usr/local/bin/voidbr-webapps:930 usr/local/bin/voidbr-webapps:1066
+#: usr/local/bin/voidbr-webapps:1481 usr/local/bin/voidbr-webapps:1565
 msgid "Cancelar"
 msgstr "Annuler"
 
-#: usr/local/bin/voidbr-webapps:933 usr/local/bin/voidbr-webapps:1071
-#: usr/local/bin/voidbr-webapps:1191
+#: usr/local/bin/voidbr-webapps:933 usr/local/bin/voidbr-webapps:1069
+#: usr/local/bin/voidbr-webapps:1220 usr/local/bin/voidbr-webapps:1482
 msgid "Salvar"
 msgstr "Sauvegarder"
 
@@ -188,34 +197,70 @@ msgstr "Nouvelle application Web"
 msgid "Nome do App"
 msgstr "Nom de l'application"
 
-#: usr/local/bin/voidbr-webapps:988 usr/local/bin/voidbr-webapps:1155
+#: usr/local/bin/voidbr-webapps:987 usr/local/bin/voidbr-webapps:1156
 msgid "URL:"
 msgstr "URL :"
 
-#: usr/local/bin/voidbr-webapps:992 usr/local/bin/voidbr-webapps:1157
+#: usr/local/bin/voidbr-webapps:991 usr/local/bin/voidbr-webapps:1158
 msgid "Nome:"
 msgstr "Nom:"
 
-#: usr/local/bin/voidbr-webapps:996 usr/local/bin/voidbr-webapps:1159
+#: usr/local/bin/voidbr-webapps:995 usr/local/bin/voidbr-webapps:1160
 msgid "Navegador:"
 msgstr "Navigateur:"
 
-#: usr/local/bin/voidbr-webapps:999
+#: usr/local/bin/voidbr-webapps:998 usr/local/bin/voidbr-webapps:1163
 msgid "Ícone:"
 msgstr "Icône:"
 
-#: usr/local/bin/voidbr-webapps:1008
+#: usr/local/bin/voidbr-webapps:1007 usr/local/bin/voidbr-webapps:1176
 msgid "Escolher Ícone..."
 msgstr "Choisissez l'icône..."
 
-#: usr/local/bin/voidbr-webapps:1126
+#: usr/local/bin/voidbr-webapps:1125
 msgid "Editar WebApp"
 msgstr "Modifier l'application Web"
 
-#: usr/local/bin/voidbr-webapps:1330
+#: usr/local/bin/voidbr-webapps:1224
+msgid "Salvar ✓"
+msgstr "Enregistrer ✓"
+
+#: usr/local/bin/voidbr-webapps:1477
+msgid "Salvar Backup dos WebApps"
+msgstr "Enregistrer Sauvegarder deux WebApps"
+
+#: usr/local/bin/voidbr-webapps:1491 usr/local/bin/voidbr-webapps:1572
+msgid "Arquivo de Backup (*.tar.gz)"
+msgstr "Fichier de sauvegarde (*.tar.gz)"
+
+#: usr/local/bin/voidbr-webapps:1530
+msgid "🎉 Backup completo concluído com sucesso!"
+msgstr "🎉 Sauvegarde complète terminée avec succès !"
+
+#: usr/local/bin/voidbr-webapps:1543
+msgid "🚫 Falha ao gerar backup"
+msgstr "🚫 Échec de la génération de la sauvegarde"
+
+#: usr/local/bin/voidbr-webapps:1561
+msgid "Selecionar Arquivo de Backup"
+msgstr "Sélectionnez le fichier de sauvegarde"
+
+#: usr/local/bin/voidbr-webapps:1566
+msgid "Restaurar"
+msgstr "Restaurer"
+
+#: usr/local/bin/voidbr-webapps:1612
+msgid "🎉 Restauração concluída com sucesso e dados atualizados!"
+msgstr "🎉 Restauration terminée avec succès et données mises à jour !"
+
+#: usr/local/bin/voidbr-webapps:1621
+msgid "🚫 Falha ao restaurar backup"
+msgstr "🚫 Échec de la restauration de la sauvegarde"
+
+#: usr/local/bin/voidbr-webapps:1641
 msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
 msgstr "Gestionnaire WebApps officiel pour l'écosystème VoidBR."
 
-#: usr/local/bin/voidbr-webapps:1332
+#: usr/local/bin/voidbr-webapps:1643
 msgid "Website do Projeto"
 msgstr "Site Web du projet"

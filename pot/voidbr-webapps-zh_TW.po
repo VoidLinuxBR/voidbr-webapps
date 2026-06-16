@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: chili-tradutor-go 2.1.20-20260201\n"
-"POT-Creation-Date: 2026-06-06 20:19-0400\n"
-"PO-Revision-Date: 2026-06-06 20:19-0400\n"
+"POT-Creation-Date: 2026-06-16 01:30-0400\n"
+"PO-Revision-Date: 2026-06-16 01:30-0400\n"
 "Last-Translator: Vilmar Catafesta <vcatafesta@gmail.com>\n"
 "Language-Team: Portuguese <https://github.com/chililinux/chili-tradutor-go>\n"
 "MIME-Version: 1.0\n"
@@ -14,169 +14,178 @@ msgstr ""
 "Language: zh_TW\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: usr/local/bin/voidbr-webapps:174
+#: usr/local/bin/voidbr-webapps:188
 msgid "Adicionar"
 msgstr "添加"
 
-#: usr/local/bin/voidbr-webapps:178
+#: usr/local/bin/voidbr-webapps:192
 msgid "Adicionar um novo WebApp e gerar seu atalho automaticamente"
 msgstr "新增新的WebApp並自動產生其捷徑"
 
-#: usr/local/bin/voidbr-webapps:182 usr/local/bin/voidbr-webapps:409
+#: usr/local/bin/voidbr-webapps:196 usr/local/bin/voidbr-webapps:448
 msgid "Remover"
 msgstr "去除劑"
 
-#: usr/local/bin/voidbr-webapps:186
+#: usr/local/bin/voidbr-webapps:200
 msgid "Remover o WebApp selecionado e apagar seu atalho do sistema"
 msgstr "刪除選定的 WebApp 並從系統中刪除其捷徑"
 
-#: usr/local/bin/voidbr-webapps:190 usr/local/bin/voidbr-webapps:408
+#: usr/local/bin/voidbr-webapps:204 usr/local/bin/voidbr-webapps:447
 msgid "Gerar Atalho"
 msgstr "產生快捷方式"
 
-#: usr/local/bin/voidbr-webapps:194
+#: usr/local/bin/voidbr-webapps:208
 msgid "Regerar manualmente o arquivo de atalho do WebApp selecionado"
 msgstr "手動重新產生選定的WebApp捷徑文件"
 
-#: usr/local/bin/voidbr-webapps:203
+#: usr/local/bin/voidbr-webapps:217
 msgid "Configurações do Aplicativo"
 msgstr "應用程式設定"
 
-#: usr/local/bin/voidbr-webapps:206
+#: usr/local/bin/voidbr-webapps:223
+msgid "Fazer Backup Completo (Dados e Atalhos .desktop)"
+msgstr "進行完整備份（桌面資料和捷徑）"
+
+#: usr/local/bin/voidbr-webapps:229
+msgid "Restaurar Backup Completo"
+msgstr "恢復完整備份"
+
+#: usr/local/bin/voidbr-webapps:232
 msgid "Sobre"
 msgstr "在"
 
-#: usr/local/bin/voidbr-webapps:210
+#: usr/local/bin/voidbr-webapps:236
 msgid "Ver informações, desenvolvedores e créditos do projeto"
 msgstr "查看專案資訊、開發人員和製作人員"
 
-#: usr/local/bin/voidbr-webapps:214
+#: usr/local/bin/voidbr-webapps:240
 msgid "Sair"
-msgstr "出去"
+msgstr "退出"
 
-#: usr/local/bin/voidbr-webapps:217
+#: usr/local/bin/voidbr-webapps:243
 msgid "Fechar o gerenciador VoidBR WebApps"
 msgstr "關閉 VoidBR WebApps 管理器"
 
-#: usr/local/bin/voidbr-webapps:315
+#: usr/local/bin/voidbr-webapps:359
 msgid "Aplicativo"
 msgstr "應用"
 
-#: usr/local/bin/voidbr-webapps:331
+#: usr/local/bin/voidbr-webapps:375
 msgid "Navegador"
 msgstr "瀏覽器"
 
-#: usr/local/bin/voidbr-webapps:349
+#: usr/local/bin/voidbr-webapps:393
 msgid "URL"
 msgstr "網址"
 
-#: usr/local/bin/voidbr-webapps:406
+#: usr/local/bin/voidbr-webapps:445
 msgid "Executar"
 msgstr "執行"
 
-#: usr/local/bin/voidbr-webapps:407
+#: usr/local/bin/voidbr-webapps:446
 msgid "Editar"
 msgstr "編輯"
 
-#: usr/local/bin/voidbr-webapps:443
+#: usr/local/bin/voidbr-webapps:484
 msgid "Navegador Padrão do Sistema (xdg-open)"
 msgstr "系統預設瀏覽器（xdg-open）"
 
-#: usr/local/bin/voidbr-webapps:678 usr/local/bin/voidbr-webapps:725
+#: usr/local/bin/voidbr-webapps:732
+msgid "🚫 Nenhum navegador disponível"
+msgstr "🚫 沒有可用的瀏覽器"
+
+#: usr/local/bin/voidbr-webapps:734
 msgid ""
 "Todos os navegadores disponíveis já estão sendo utilizados para esta URL."
 msgstr ""
 
-#: usr/local/bin/voidbr-webapps:723
-msgid "🚫 Nenhum navegador disponível"
-msgstr "🚫 沒有可用的瀏覽器"
-
-#: usr/local/bin/voidbr-webapps:750
+#: usr/local/bin/voidbr-webapps:757
 msgid "Imagens (*.png, *.jpg, *.svg)"
 msgstr "圖片（*.png、*.jpg、*.svg）"
 
-#: usr/local/bin/voidbr-webapps:757
+#: usr/local/bin/voidbr-webapps:764
 msgid "Selecionar Ícone Personalizado"
 msgstr "選擇自訂圖標"
 
-#: usr/local/bin/voidbr-webapps:768
+#: usr/local/bin/voidbr-webapps:775
 msgid "Buscando ícone do site..."
 msgstr "正在搜尋網站圖示..."
 
-#: usr/local/bin/voidbr-webapps:808
+#: usr/local/bin/voidbr-webapps:814
 msgid "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
 msgstr "⚠️ 未找到 URL 圖示。使用系統預設圖示。"
 
-#: usr/local/bin/voidbr-webapps:818
+#: usr/local/bin/voidbr-webapps:823
 msgid "Configurações"
 msgstr "設定"
 
-#: usr/local/bin/voidbr-webapps:849
+#: usr/local/bin/voidbr-webapps:854
 msgid "Densidade da Lista:"
 msgstr "列表密度："
 
-#: usr/local/bin/voidbr-webapps:851
+#: usr/local/bin/voidbr-webapps:856
 msgid "Confortável (Larga)"
 msgstr "舒適（大）"
 
-#: usr/local/bin/voidbr-webapps:852
+#: usr/local/bin/voidbr-webapps:857
 msgid "Compacto (Estreita)"
 msgstr "緊湊（窄）"
 
-#: usr/local/bin/voidbr-webapps:856
+#: usr/local/bin/voidbr-webapps:861
 msgid "Interface"
 msgstr "介面"
 
-#: usr/local/bin/voidbr-webapps:871
+#: usr/local/bin/voidbr-webapps:875
 msgid "Navegador Padrão:"
 msgstr "預設瀏覽器："
 
-#: usr/local/bin/voidbr-webapps:879
+#: usr/local/bin/voidbr-webapps:882
 msgid "Categorias Adicionais:"
 msgstr "其他類別："
 
-#: usr/local/bin/voidbr-webapps:882
+#: usr/local/bin/voidbr-webapps:885
 msgid "Nenhuma (Apenas X-VoidBR-WebApps)"
 msgstr "無（限 X-VoidBR-WebApps）"
 
-#: usr/local/bin/voidbr-webapps:883
+#: usr/local/bin/voidbr-webapps:886
 msgid "Internet / Navegadores"
 msgstr "網際網路/瀏覽器"
 
-#: usr/local/bin/voidbr-webapps:884
+#: usr/local/bin/voidbr-webapps:887
 msgid "Desenvolvimento"
 msgstr "發展"
 
-#: usr/local/bin/voidbr-webapps:885
+#: usr/local/bin/voidbr-webapps:888
 msgid "Escritório"
 msgstr "桌子"
 
-#: usr/local/bin/voidbr-webapps:886
+#: usr/local/bin/voidbr-webapps:889
 msgid "Gráficos"
 msgstr "圖形"
 
-#: usr/local/bin/voidbr-webapps:887
+#: usr/local/bin/voidbr-webapps:890
 msgid "Jogos"
 msgstr "遊戲"
 
-#: usr/local/bin/voidbr-webapps:902
+#: usr/local/bin/voidbr-webapps:904
 msgid "Resolução do Ícone:"
 msgstr "圖標解析度："
 
-#: usr/local/bin/voidbr-webapps:912
+#: usr/local/bin/voidbr-webapps:913
 msgid "Modo Janela Isolada:"
 msgstr "隔離視窗模式："
 
-#: usr/local/bin/voidbr-webapps:919
+#: usr/local/bin/voidbr-webapps:920
 msgid "Padrões de Criação"
 msgstr "育種標準"
 
-#: usr/local/bin/voidbr-webapps:930 usr/local/bin/voidbr-webapps:1068
+#: usr/local/bin/voidbr-webapps:930 usr/local/bin/voidbr-webapps:1066
+#: usr/local/bin/voidbr-webapps:1481 usr/local/bin/voidbr-webapps:1565
 msgid "Cancelar"
 msgstr "取消"
 
-#: usr/local/bin/voidbr-webapps:933 usr/local/bin/voidbr-webapps:1071
-#: usr/local/bin/voidbr-webapps:1191
+#: usr/local/bin/voidbr-webapps:933 usr/local/bin/voidbr-webapps:1069
+#: usr/local/bin/voidbr-webapps:1220 usr/local/bin/voidbr-webapps:1482
 msgid "Salvar"
 msgstr "節省"
 
@@ -188,34 +197,70 @@ msgstr "新的網頁應用程式"
 msgid "Nome do App"
 msgstr "應用程式名稱"
 
-#: usr/local/bin/voidbr-webapps:988 usr/local/bin/voidbr-webapps:1155
+#: usr/local/bin/voidbr-webapps:987 usr/local/bin/voidbr-webapps:1156
 msgid "URL:"
 msgstr "網址："
 
-#: usr/local/bin/voidbr-webapps:992 usr/local/bin/voidbr-webapps:1157
+#: usr/local/bin/voidbr-webapps:991 usr/local/bin/voidbr-webapps:1158
 msgid "Nome:"
 msgstr "姓名："
 
-#: usr/local/bin/voidbr-webapps:996 usr/local/bin/voidbr-webapps:1159
+#: usr/local/bin/voidbr-webapps:995 usr/local/bin/voidbr-webapps:1160
 msgid "Navegador:"
-msgstr "Navegador:"
+msgstr "瀏覽器："
 
-#: usr/local/bin/voidbr-webapps:999
+#: usr/local/bin/voidbr-webapps:998 usr/local/bin/voidbr-webapps:1163
 msgid "Ícone:"
 msgstr "圖示:"
 
-#: usr/local/bin/voidbr-webapps:1008
+#: usr/local/bin/voidbr-webapps:1007 usr/local/bin/voidbr-webapps:1176
 msgid "Escolher Ícone..."
 msgstr "選擇圖示..."
 
-#: usr/local/bin/voidbr-webapps:1126
+#: usr/local/bin/voidbr-webapps:1125
 msgid "Editar WebApp"
-msgstr "Editar WebApp"
+msgstr "編輯網頁應用程式"
 
-#: usr/local/bin/voidbr-webapps:1330
+#: usr/local/bin/voidbr-webapps:1224
+msgid "Salvar ✓"
+msgstr "保存 ✓"
+
+#: usr/local/bin/voidbr-webapps:1477
+msgid "Salvar Backup dos WebApps"
+msgstr "保存備份兩個WebApps"
+
+#: usr/local/bin/voidbr-webapps:1491 usr/local/bin/voidbr-webapps:1572
+msgid "Arquivo de Backup (*.tar.gz)"
+msgstr "備份檔 (*.tar.gz)"
+
+#: usr/local/bin/voidbr-webapps:1530
+msgid "🎉 Backup completo concluído com sucesso!"
+msgstr "🎉 完整備份成功完成！"
+
+#: usr/local/bin/voidbr-webapps:1543
+msgid "🚫 Falha ao gerar backup"
+msgstr "🚫 產生備份失敗"
+
+#: usr/local/bin/voidbr-webapps:1561
+msgid "Selecionar Arquivo de Backup"
+msgstr "選擇備份文件"
+
+#: usr/local/bin/voidbr-webapps:1566
+msgid "Restaurar"
+msgstr "恢復"
+
+#: usr/local/bin/voidbr-webapps:1612
+msgid "🎉 Restauração concluída com sucesso e dados atualizados!"
+msgstr "🎉 恢復成功完成並更新資料！"
+
+#: usr/local/bin/voidbr-webapps:1621
+msgid "🚫 Falha ao restaurar backup"
+msgstr "🚫 恢復備份失敗"
+
+#: usr/local/bin/voidbr-webapps:1641
 msgid "Gerenciador oficial de WebApps para o ecossistema VoidBR."
 msgstr "VoidBR 生態系的官方 WebApps 管理器。"
 
-#: usr/local/bin/voidbr-webapps:1332
+#: usr/local/bin/voidbr-webapps:1643
 msgid "Website do Projeto"
 msgstr "專案網站"
