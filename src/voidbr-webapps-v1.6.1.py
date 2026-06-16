@@ -70,7 +70,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.6.2"
+__version__ = "1.6.1"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -169,6 +169,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self.config = self.load_config()
         self.apps = self.load_apps()
+        self.canonicalize_names()
         self.cleanup_orphans()
         self.setup_actions()
 
@@ -286,6 +287,33 @@ class MainWindow(Gtk.ApplicationWindow):
         main_box.append(scroll)
 
         self.refresh()
+
+    def canonicalize_names(self):
+        changed = False
+
+        browsers_map = self._get_installed_browsers()
+
+        for app in self.apps:
+            browser = app.get("browser", "default")
+
+            if browser == "default":
+                suffix = "Navegador"
+            else:
+                suffix = browsers_map.get(browser, browser)
+
+            current_name = app.get("name", "").strip()
+
+            # Remove qualquer sufixo antigo "(...)"
+            base_name = re.sub(r"\s+\([^)]*\)$", "", current_name).strip()
+
+            canonical_name = f"{base_name} ({suffix})"
+
+            if current_name != canonical_name:
+                app["name"] = canonical_name
+                changed = True
+
+        if changed:
+            self.save_apps()
 
     def get_desktop_path(self, app):
         return (
@@ -487,19 +515,6 @@ class MainWindow(Gtk.ApplicationWindow):
                 installed[b_id] = b_name
         return installed
 
-    def get_display_name(self, app):
-        browsers = self._get_installed_browsers()
-
-        browser = app.get("browser", "default")
-
-        if browser == "default":
-            browser_name = "Navegador"
-        else:
-            browser_name = browsers.get(browser, browser)
-
-        return f"{app['name']} ({browser_name})"
-
-
     def _get_selected_app_and_index(self):
         pos = self.selection.get_selected()
         if pos == Gtk.INVALID_LIST_POSITION:
@@ -598,7 +613,7 @@ class MainWindow(Gtk.ApplicationWindow):
         for idx, app in enumerate(self.apps):
             browser_label = app.get("browser", "default")
             item_obj = WebAppItem(
-                name=self.get_display_name(app),
+                name=app["name"],
                 browser=browser_label,
                 url=app["url"],
                 icon=app.get("icon", ""),
@@ -1031,9 +1046,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 if not name_entry.get_text().strip():
                     name_entry.set_text(self._suggest_name_from_url(url_text))
 
-        #focus_controller = Gtk.EventControllerFocus.new()
-        #focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
-        #url_entry.add_controller(focus_controller)
+        focus_controller = Gtk.EventControllerFocus.new()
+        focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
+        url_entry.add_controller(focus_controller)
         url_entry.connect("activate", refresh_ui_logic)
 
         btn_browse.connect(
@@ -1100,6 +1115,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 new_app["icon"] = str(dest_path)
 
             self.apps.append(new_app)
+            self.canonicalize_names()
             self.save_apps()
             self.refresh()
             if not new_app["icon"]:
@@ -1142,16 +1158,12 @@ class MainWindow(Gtk.ApplicationWindow):
         main_layout.append(grid)
 
         url_entry = Gtk.Entry(text=app["url"], hexpand=True)
-        name_entry = Gtk.Entry(
-            text=app["name"],
-            hexpand=True
-        )
-
+        name_entry = Gtk.Entry(text=app["name"], hexpand=True)
         browser_combo = Gtk.ComboBoxText()
+
         # Preenche os navegadores considerando o isolamento fino da URL e ignorando o app atual
         self._update_browser_combo(browser_combo, app["url"], ignore_app=app)
         browser_combo.set_active_id(app.get("browser", "default"))
-        browser_combo.set_focusable(False)
 
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
@@ -1186,9 +1198,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 entry.get_text(), preview_img, Gtk.Label(), dialog
             )
 
-        #focus_controller = Gtk.EventControllerFocus.new()
-        #focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
-        #url_entry.add_controller(focus_controller)
+        focus_controller = Gtk.EventControllerFocus.new()
+        focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
+        url_entry.add_controller(focus_controller)
 
         btn_browse.connect(
             "clicked",
@@ -1220,17 +1232,11 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_save = Gtk.Button(label=_("Salvar"))
         btn_save.add_css_class("suggested-action")
 
-        def mark_modified(widget=None):
-            btn_save.set_label(_("Salvar ✓"))
-
-        name_entry.connect("changed", mark_modified)
-        url_entry.connect("changed", mark_modified)
-        browser_combo.connect("changed", mark_modified)
-
         def edit_save_clicked(b):
             app["name"] = name_entry.get_text().strip()
             app["url"] = url_entry.get_text().strip()
             app["browser"] = browser_combo.get_active_id()
+            self.canonicalize_names()
 
             if (
                 dialog.selected_custom_icon
@@ -1416,7 +1422,7 @@ class MainWindow(Gtk.ApplicationWindow):
             else None
         )
 
-        display_name = self.get_display_name(app)
+        display_name = app["name"]
 
         if not exec_binary:
             url_unique = f"{url}#voidbr-webapp-{app['id']}"
