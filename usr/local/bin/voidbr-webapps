@@ -4,7 +4,7 @@
 #   voidbr-webapps
 #   Created: sex 05 jun 2026 13:02:13 -04
 #   Altered: sex 12 jun 2026 17:01:00 -04
-#   Updated: ter 16 jun 2026 01:29:19 -04
+#   Updated: ter 16 jun 2026 11:38:34 -04
 #
 #   Copyright (c) 2019-2026, Vilmar Catafesta <vcatafesta@gmail.com>
 #   Copyright (c) 2019-2026, ChiliLinux Development Team <https://chililinux.com> <https://github.com/chililinux>
@@ -1031,9 +1031,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 if not name_entry.get_text().strip():
                     name_entry.set_text(self._suggest_name_from_url(url_text))
 
-        #focus_controller = Gtk.EventControllerFocus.new()
-        #focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
-        #url_entry.add_controller(focus_controller)
+        focus_controller = Gtk.EventControllerFocus.new()
+        focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
+        url_entry.add_controller(focus_controller)
         url_entry.connect("activate", refresh_ui_logic)
 
         btn_browse.connect(
