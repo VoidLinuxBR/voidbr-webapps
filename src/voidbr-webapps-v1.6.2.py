@@ -70,7 +70,7 @@ gi.require_version("Gtk", "4.0")
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
-__version__ = "1.6.3"
+__version__ = "1.6.2"
 
 # Configuração do Gettext para Internacionalização
 APP_NAME = "voidbr-webapps"
@@ -220,9 +220,7 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_backup = Gtk.Button()
         btn_backup.set_icon_name("archive-insert-symbolic")
         btn_backup.add_css_class("btn-backup")
-        btn_backup.set_tooltip_text(
-            _("Fazer Backup Completo (Dados e Atalhos .desktop)")
-        )
+        btn_backup.set_tooltip_text(_("Fazer Backup Completo (Dados e Atalhos .desktop)"))
         btn_backup.connect("clicked", self.on_backup)
 
         btn_restore = Gtk.Button()
@@ -489,33 +487,6 @@ class MainWindow(Gtk.ApplicationWindow):
                 installed[b_id] = b_name
         return installed
 
-    # def _build_browser_combo(self, active_browser=None):
-    #    combo = Gtk.ComboBoxText()
-
-    #    for b_id, b_name in self._get_installed_browsers().items():
-    #        combo.append(b_id, b_name)
-
-    #    if active_browser:
-    #        combo.set_active_id(active_browser)
-    #    else:
-    #        combo.set_active(0)
-
-    #    return combo
-
-    def _build_browser_combo(self, active_id="default", available_browsers=None):
-        combo = Gtk.ComboBoxText()
-        browsers = (
-            available_browsers
-            if available_browsers is not None
-            else self._get_installed_browsers()
-        )
-        if active_id not in browsers:
-            browsers[active_id] = active_id
-        for b_id, b_name in browsers.items():
-            combo.append(b_id, b_name)
-        combo.set_active_id(active_id)
-        return combo
-
     def get_display_name(self, app):
         browsers = self._get_installed_browsers()
 
@@ -527,6 +498,7 @@ class MainWindow(Gtk.ApplicationWindow):
             browser_name = browsers.get(browser, browser)
 
         return f"{app['name']} ({browser_name})"
+
 
     def _get_selected_app_and_index(self):
         pos = self.selection.get_selected()
@@ -729,6 +701,20 @@ class MainWindow(Gtk.ApplicationWindow):
         domain = re.split(r"[./]", domain)[0]
         return domain.capitalize()
 
+    def _build_browser_combo(self, active_id="default", available_browsers=None):
+        combo = Gtk.ComboBoxText()
+        browsers = (
+            available_browsers
+            if available_browsers is not None
+            else self._get_installed_browsers()
+        )
+        if active_id not in browsers:
+            browsers[active_id] = active_id
+        for b_id, b_name in browsers.items():
+            combo.append(b_id, b_name)
+        combo.set_active_id(active_id)
+        return combo
+
     def _update_browser_combo(self, combo, url, btn_save=None, ignore_app=None):
         check_url = url.strip()
         if not check_url:
@@ -818,7 +804,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
                 GLib.idle_add(update_ui)
             except Exception:
-
                 def update_ui_error():
                     if not getattr(dialog_obj, "user_locked_custom_icon", False):
                         preview_widget.set_from_icon_name("web-browser")
@@ -829,7 +814,6 @@ class MainWindow(Gtk.ApplicationWindow):
                                 "⚠️ Ícone da URL não encontrado. Usando ícone padrão do sistema."
                             )
                         )
-
                 GLib.idle_add(update_ui_error)
 
         threading.Thread(target=worker, daemon=True).start()
@@ -838,159 +822,7 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog = Gtk.Window(
             title=_("Configurações"),
             transient_for=self,
-            modal=False,
-            default_width=450,
-            destroy_with_parent=True,
-        )
-        main_layout = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=15,
-            margin_top=15,
-            margin_bottom=15,
-            margin_start=15,
-            margin_end=15,
-        )
-        dialog.set_child(main_layout)
-
-        notebook = Gtk.Notebook()
-        main_layout.append(notebook)
-
-        # --- ABA 1: INTERFACE ---
-        tab_interface = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=12,
-            margin_top=10,
-            margin_bottom=10,
-            margin_start=10,
-            margin_end=10,
-        )
-        grid_ui = Gtk.Grid(row_spacing=12, column_spacing=10)
-        tab_interface.append(grid_ui)
-
-        grid_ui.attach(Gtk.Label(label=_("Densidade da Lista:"), xalign=1), 0, 0, 1, 1)
-        density_combo = Gtk.ComboBoxText()
-        density_combo.append("comfortable", _("Confortável (Larga)"))
-        density_combo.append("compact", _("Compacto (Estreita)"))
-        density_combo.set_active_id(self.config.get("density", "comfortable"))
-        grid_ui.attach(density_combo, 1, 0, 1, 1)
-
-        notebook.append_page(tab_interface, Gtk.Label(label=_("Interface")))
-
-        # --- ABA 2: PADRÕES DE CRIAÇÃO ---
-        tab_defaults = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=12,
-            margin_top=10,
-            margin_bottom=10,
-            margin_start=10,
-            margin_end=10,
-        )
-        grid_def = Gtk.Grid(row_spacing=12, column_spacing=10)
-        tab_defaults.append(grid_def)
-
-        grid_def.attach(Gtk.Label(label=_("Navegador Padrão:"), xalign=1), 0, 0, 1, 1)
-
-        browsers_map = self._get_installed_browsers()
-
-        browser_ids = list(browsers_map.keys())
-        browser_names = list(browsers_map.values())
-
-        browser_model = Gtk.StringList.new(browser_names)
-        browser_def_combo = Gtk.DropDown(model=browser_model)
-
-        try:
-            current_index = browser_ids.index(
-                self.config.get("default_browser", "default")
-            )
-        except ValueError:
-            current_index = 0
-
-        browser_def_combo.set_selected(current_index)
-
-        grid_def.attach(browser_def_combo, 1, 0, 1, 1)
-
-        # browser_def_combo.connect(
-        #    "changed", lambda c: print("CHANGED", c.get_active_id())
-        # )
-
-        grid_def.attach(
-            Gtk.Label(label=_("Categorias Adicionais:"), xalign=1), 0, 1, 1, 1
-        )
-        category_combo = Gtk.ComboBoxText()
-        category_combo.append("", _("Nenhuma (Apenas X-VoidBR-WebApps)"))
-        category_combo.append("Network;WebBrowser;", _("Internet / Navegadores"))
-        category_combo.append("Development;", _("Desenvolvimento"))
-        category_combo.append("Office;", _("Escritório"))
-        category_combo.append("Graphics;", _("Gráficos"))
-        category_combo.append("Game;", _("Jogos"))
-
-        current_cat = self.config.get("default_category", "")
-        valid_cats = [
-            "",
-            "Network;WebBrowser;",
-            "Development;",
-            "Office;",
-            "Graphics;",
-            "Game;",
-        ]
-        category_combo.set_active_id(current_cat if current_cat in valid_cats else "")
-        grid_def.attach(category_combo, 1, 1, 1, 1)
-
-        grid_def.attach(Gtk.Label(label=_("Resolução do Ícone:"), xalign=1), 0, 2, 1, 1)
-        favicon_combo = Gtk.ComboBoxText()
-        favicon_combo.append("32", "32x32 px")
-        favicon_combo.append("64", "64x64 px (Recomendado)")
-        favicon_combo.append("128", "128x128 px (HiDPI)")
-        favicon_combo.set_active_id(self.config.get("favicon_size", "64"))
-        grid_def.attach(favicon_combo, 1, 2, 1, 1)
-
-        grid_def.attach(
-            Gtk.Label(label=_("Modo Janela Isolada:"), xalign=1), 0, 3, 1, 1
-        )
-        window_switch = Gtk.Switch()
-        window_switch.set_active(self.config.get("window_mode", True))
-        window_switch.set_halign(Gtk.Align.START)
-        grid_def.attach(window_switch, 1, 3, 1, 1)
-
-        notebook.append_page(tab_defaults, Gtk.Label(label=_("Padrões de Criação")))
-
-        button_box = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            spacing=10,
-            halign=Gtk.Align.END,
-            margin_top=10,
-        )
-        main_layout.append(button_box)
-
-        btn_cancel = Gtk.Button(label=_("Cancelar"))
-        btn_cancel.connect("clicked", lambda b: dialog.close())
-
-        btn_save = Gtk.Button(label=_("Salvar"))
-        btn_save.add_css_class("suggested-action")
-
-        def on_save_config_clicked(b):
-            self.config["density"] = density_combo.get_active_id()
-            selected_index = browser_def_combo.get_selected()
-            self.config["default_browser"] = browser_ids[selected_index]
-            self.config["default_category"] = category_combo.get_active_id()
-            self.config["favicon_size"] = favicon_combo.get_active_id()
-            self.config["window_mode"] = window_switch.get_active()
-
-            self.save_config()
-            self.update_list_density_css()
-            self.refresh()
-            dialog.close()
-
-        btn_save.connect("clicked", on_save_config_clicked)
-        button_box.append(btn_cancel)
-        button_box.append(btn_save)
-        dialog.present()
-
-    def on_open_configOLD(self, button):
-        dialog = Gtk.Window(
-            title=_("Configurações"),
-            transient_for=self,
-            modal=False,
+            modal=True,
             default_width=450,
             destroy_with_parent=True,
         )
@@ -1046,10 +878,6 @@ class MainWindow(Gtk.ApplicationWindow):
         )
         grid_def.attach(browser_def_combo, 1, 0, 1, 1)
 
-        # browser_def_combo.connect(
-        #    "changed", lambda c: print("CHANGED", c.get_active_id())
-        # )
-
         grid_def.attach(
             Gtk.Label(label=_("Categorias Adicionais:"), xalign=1), 0, 1, 1, 1
         )
@@ -1106,7 +934,6 @@ class MainWindow(Gtk.ApplicationWindow):
         btn_save.add_css_class("suggested-action")
 
         def on_save_config_clicked(b):
-            print("CONFIG SAVE")
             self.config["density"] = density_combo.get_active_id()
             self.config["default_browser"] = browser_def_combo.get_active_id()
             self.config["default_category"] = category_combo.get_active_id()
@@ -1146,161 +973,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
         url_entry = Gtk.Entry(placeholder_text="https://exemplo.com", hexpand=True)
         name_entry = Gtk.Entry(placeholder_text=_("Nome do App"), hexpand=True)
+        browser_combo = Gtk.ComboBoxText()
 
-        # Mapeamento para Gtk.DropDown
-        browsers_map = self._get_installed_browsers()
-        browser_ids = list(browsers_map.keys())
-        browser_names = list(browsers_map.values())
-        
-        browser_dropdown = Gtk.DropDown.new_from_strings(browser_names)
-        
-        # Selecionar o padrão
-        default_b = self.config.get("default_browser", "default")
-        try:
-            browser_dropdown.set_selected(browser_ids.index(default_b))
-        except ValueError:
-            browser_dropdown.set_selected(0)
-
-        url_error_label = Gtk.Label(xalign=0)
-        url_error_label.add_css_class("error-text")
-        name_error_label = Gtk.Label(xalign=0)
-        name_error_label.add_css_class("error-text")
-
-        grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
-        grid.attach(url_entry, 1, 0, 1, 1)
-        grid.attach(url_error_label, 1, 1, 1, 1)
-
-        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 2, 1, 1)
-        grid.attach(name_entry, 1, 2, 1, 1)
-        grid.attach(name_error_label, 1, 3, 1, 1)
-
-        grid.attach(Gtk.Label(label=_("Navegador:"), xalign=1), 0, 4, 1, 1)
-        grid.attach(browser_dropdown, 1, 4, 1, 1)
-
-        grid.attach(Gtk.Label(label=_("Ícone:"), xalign=1), 0, 5, 1, 1)
-        icon_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        grid.attach(icon_box, 1, 5, 1, 1)
-
-        preview_img = Gtk.Image.new_from_icon_name("web-browser")
-        preview_img.set_pixel_size(32)
-        preview_img.add_css_class("preview-icon")
-        icon_box.append(preview_img)
-
-        btn_browse = Gtk.Button(label=_("Escolher Ícone..."))
-        btn_browse.set_icon_name("folder-open-symbolic")
-        icon_box.append(btn_browse)
-
-        icon_status_label = Gtk.Label(xalign=0)
-        icon_status_label.add_css_class("error-text")
-        grid.attach(icon_status_label, 1, 6, 1, 1)
-
-        dialog.selected_custom_icon = None
-        dialog.user_locked_custom_icon = False
-        dialog.is_url_favicon = False
-
-        # Lógica de atualização adaptada
-        def add_refresh_ui_logic(entry):
-            url_text = entry.get_text().strip()
-            if not url_text: return
-            # Nota: O _update_browser_combo precisa ser ajustado para DropDown se for reutilizado aqui
-            if self.is_valid_url(url_text) or self.is_valid_url("https://" + url_text):
-                self._async_fetch_favicon_preview(url_text, preview_img, icon_status_label, dialog)
-                if not name_entry.get_text().strip():
-                    name_entry.set_text(self._suggest_name_from_url(url_text))
-
-        focus_controller = Gtk.EventControllerFocus.new()
-        focus_controller.connect("leave", lambda c: add_refresh_ui_logic(url_entry))
-        url_entry.add_controller(focus_controller)
-        url_entry.connect("activate", add_refresh_ui_logic)
-
-        btn_browse.connect("clicked", lambda b: self._setup_file_dialog_filter().open(
-            dialog, None, lambda res, target: (
-                lambda f: (
-                    (setattr(dialog, "selected_custom_icon", f.get_path()),
-                     setattr(dialog, "user_locked_custom_icon", True),
-                     preview_img.set_from_file(f.get_path())) if f else None
-                )
-            )(res.open_finish(target))
-        ))
-
-        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10, halign=Gtk.Align.END, margin_top=10)
-        main_layout.append(button_box)
-
-        btn_cancel = Gtk.Button(label=_("Cancelar"))
-        btn_cancel.connect("clicked", lambda b: dialog.close())
-
-        btn_save = Gtk.Button(label=_("Salvar"))
-        btn_save.add_css_class("suggested-action")
-
-        def add_save_clicked(b):
-            name, url = name_entry.get_text().strip(), url_entry.get_text().strip()
-            # Recupera ID via índice selecionado
-            browser = browser_ids[browser_dropdown.get_selected()]
-            
-            if not name or not url: return
-            if not url.startswith(("http://", "https://")): url = "https://" + url
-
-            new_app = {
-                "id": max((app.get("id", 0) for app in self.apps), default=0) + 1,
-                "name": name,
-                "url": url,
-                "icon": "",
-                "browser": browser,
-                "window_mode": self.config.get("window_mode", True),
-                "category": self.config.get("default_category", ""),
-            }
-
-            if dialog.selected_custom_icon and os.path.exists(dialog.selected_custom_icon):
-                dest_path = self.get_icon_path(new_app, Path(dialog.selected_custom_icon).suffix)
-                shutil.copy(dialog.selected_custom_icon, dest_path)
-                new_app["icon"] = str(dest_path)
-
-            self.apps.append(new_app)
-            self.save_apps()
-            self.refresh()
-            if not new_app["icon"]:
-                threading.Thread(target=self.download_favicon, args=(new_app, url), daemon=True).start()
-            else:
-                self.generate_desktop_file(new_app)
-            dialog.close()
-
-        btn_save.connect("clicked", add_save_clicked)
-        button_box.append(btn_cancel)
-        button_box.append(btn_save)
-        dialog.present()
-
-
-    def on_addOLD(self, button):
-        dialog = Gtk.Window(
-            title=_("Novo WebApp"),
-            transient_for=self,
-            modal=True,
-            default_width=460,
-            destroy_with_parent=True,
-        )
-        main_layout = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=10,
-            margin_top=15,
-            margin_bottom=15,
-            margin_start=15,
-            margin_end=15,
-        )
-        dialog.set_child(main_layout)
-
-        grid = Gtk.Grid(row_spacing=8, column_spacing=10)
-        main_layout.append(grid)
-
-        url_entry = Gtk.Entry(placeholder_text="https://exemplo.com", hexpand=True)
-        name_entry = Gtk.Entry(placeholder_text=_("Nome do App"), hexpand=True)
-
-        # browser_combo = Gtk.ComboBoxText()
-        # for b_id, b_name in self._get_installed_browsers().items():
-        #    browser_combo.append(b_id, b_name)
-        # browser_combo.set_active_id(self.config.get("default_browser", "default"))
-        browser_combo = self._build_browser_combo(
-            self.config.get("default_browser", "default")
-        )
+        for b_id, b_name in self._get_installed_browsers().items():
+            browser_combo.append(b_id, b_name)
+        browser_combo.set_active_id(self.config.get("default_browser", "default"))
 
         url_error_label = Gtk.Label(xalign=0)
         url_error_label.add_css_class("error-text")
@@ -1339,7 +1016,7 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.user_locked_custom_icon = False
         dialog.is_url_favicon = False
 
-        def add_refresh_ui_logic(entry):
+        def refresh_ui_logic(entry):
             url_text = entry.get_text().strip()
             url_error_label.set_text("")
             if not url_text:
@@ -1355,9 +1032,9 @@ class MainWindow(Gtk.ApplicationWindow):
                     name_entry.set_text(self._suggest_name_from_url(url_text))
 
         focus_controller = Gtk.EventControllerFocus.new()
-        focus_controller.connect("leave", lambda c: add_refresh_ui_logic(url_entry))
+        focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
         url_entry.add_controller(focus_controller)
-        url_entry.connect("activate", add_refresh_ui_logic)
+        url_entry.connect("activate", refresh_ui_logic)
 
         btn_browse.connect(
             "clicked",
@@ -1451,7 +1128,6 @@ class MainWindow(Gtk.ApplicationWindow):
             default_width=460,
             destroy_with_parent=True,
         )
-
         main_layout = Gtk.Box(
             orientation=Gtk.Orientation.VERTICAL,
             spacing=10,
@@ -1466,159 +1142,16 @@ class MainWindow(Gtk.ApplicationWindow):
         main_layout.append(grid)
 
         url_entry = Gtk.Entry(text=app["url"], hexpand=True)
-        name_entry = Gtk.Entry(text=app["name"], hexpand=True)
-
-        # --- DropDown substituindo ComboBoxText ---
-        browsers_map = self._get_installed_browsers()
-        browsers_ids = list(browsers_map.keys())
-        browsers_names = list(browsers_map.values())
-
-        string_list = Gtk.StringList.new(browsers_names)
-        browser_dropdown = Gtk.DropDown(model=string_list)
-
-        try:
-            current_index = browsers_ids.index(app.get("browser", "default"))
-        except ValueError:
-            current_index = 0
-        browser_dropdown.set_selected(current_index)
-
-        grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
-        grid.attach(url_entry, 1, 0, 1, 1)
-        grid.attach(Gtk.Label(label=_("Nome:"), xalign=1), 0, 2, 1, 1)
-        grid.attach(name_entry, 1, 2, 1, 1)
-        grid.attach(Gtk.Label(label=_("Navegador:"), xalign=1), 0, 4, 1, 1)
-        grid.attach(browser_dropdown, 1, 4, 1, 1)
-
-        # Ícone
-        grid.attach(Gtk.Label(label=_("Ícone:"), xalign=1), 0, 5, 1, 1)
-        icon_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        grid.attach(icon_box, 1, 5, 1, 1)
-
-        preview_img = Gtk.Image()
-        preview_img.set_pixel_size(32)
-        preview_img.add_css_class("preview-icon")
-        if app.get("icon") and os.path.exists(app["icon"]):
-            preview_img.set_from_file(app["icon"])
-        else:
-            preview_img.set_from_icon_name("web-browser")
-        icon_box.append(preview_img)
-
-        btn_browse = Gtk.Button(label=_("Escolher Ícone..."))
-        btn_browse.set_icon_name("folder-open-symbolic")
-        icon_box.append(btn_browse)
-
-        dialog.selected_custom_icon = app.get("icon")
-        dialog.user_locked_custom_icon = False
-
-        def edit_refresh_ui_logic(entry):
-            self._async_fetch_favicon_preview(
-                entry.get_text(), preview_img, Gtk.Label(), dialog
-            )
-
-        focus_controller = Gtk.EventControllerFocus.new()
-        focus_controller.connect("leave", lambda c: edit_refresh_ui_logic(url_entry))
-        url_entry.add_controller(focus_controller)
-
-        btn_browse.connect(
-            "clicked",
-            lambda b: self._setup_file_dialog_filter().open(
-                dialog,
-                None,
-                lambda res, target: (
-                    lambda f: (
-                        (
-                            setattr(dialog, "selected_custom_icon", f.get_path()),
-                            setattr(dialog, "user_locked_custom_icon", True),
-                            preview_img.set_from_file(f.get_path()),
-                        )
-                        if f
-                        else None
-                    )
-                )(res.open_finish(target)),
-            ),
+        name_entry = Gtk.Entry(
+            text=app["name"],
+            hexpand=True
         )
 
-        button_box = Gtk.Box(
-            orientation=Gtk.Orientation.HORIZONTAL,
-            spacing=10,
-            halign=Gtk.Align.END,
-            margin_top=10,
-        )
-        main_layout.append(button_box)
-
-        btn_save = Gtk.Button(label=_("Salvar"))
-        btn_save.add_css_class("suggested-action")
-
-        def mark_modified(widget=None):
-            btn_save.set_label(_("Salvar ✓"))
-
-        name_entry.connect("changed", mark_modified)
-        url_entry.connect("changed", mark_modified)
-        browser_dropdown.connect("notify::selected", mark_modified)
-
-        def edit_save_clicked(b):
-            app["name"] = name_entry.get_text().strip()
-            app["url"] = url_entry.get_text().strip()
-            selected_index = browser_dropdown.get_selected()
-            app["browser"] = browsers_ids[selected_index]
-
-            if (
-                dialog.selected_custom_icon
-                and dialog.selected_custom_icon != app.get("icon")
-                and os.path.exists(dialog.selected_custom_icon)
-            ):
-                dest_path = self.get_icon_path(
-                    app, Path(dialog.selected_custom_icon).suffix
-                )
-                shutil.copy(dialog.selected_custom_icon, dest_path)
-                app["icon"] = str(dest_path)
-
-            self.save_apps()
-            self.refresh()
-            self.generate_desktop_file(app)
-            dialog.close()
-
-        btn_save.connect("clicked", edit_save_clicked)
-        button_box.append(btn_save)
-        dialog.present()
-
-
-    def on_editOLD(self):
-        """Abre a janela de edição de forma blindada considerando o parâmetro ignore_app"""
-        app, idx = self._get_selected_app_and_index()
-        if not app:
-            return
-
-        dialog = Gtk.Window(
-            title=_("Editar WebApp"),
-            transient_for=self,
-            modal=True,
-            default_width=460,
-            destroy_with_parent=True,
-        )
-
-        main_layout = Gtk.Box(
-            orientation=Gtk.Orientation.VERTICAL,
-            spacing=10,
-            margin_top=15,
-            margin_bottom=15,
-            margin_start=15,
-            margin_end=15,
-        )
-        dialog.set_child(main_layout)
-
-        grid = Gtk.Grid(row_spacing=8, column_spacing=10)
-        main_layout.append(grid)
-
-        url_entry = Gtk.Entry(text=app["url"], hexpand=True)
-        name_entry = Gtk.Entry(text=app["name"], hexpand=True)
-
-        # browser_combo = Gtk.ComboBoxText()
+        browser_combo = Gtk.ComboBoxText()
         # Preenche os navegadores considerando o isolamento fino da URL e ignorando o app atual
-        # self._update_browser_combo(browser_combo, app["url"], ignore_app=app)
-        # browser_combo.set_active_id(app.get("browser", "default"))
-        # browser_combo.set_focusable(False)
-        browser_combo = self._build_browser_combo(app.get("browser", "default"))
+        self._update_browser_combo(browser_combo, app["url"], ignore_app=app)
+        browser_combo.set_active_id(app.get("browser", "default"))
+        browser_combo.set_focusable(False)
 
         grid.attach(Gtk.Label(label=_("URL:"), xalign=1), 0, 0, 1, 1)
         grid.attach(url_entry, 1, 0, 1, 1)
@@ -1647,15 +1180,15 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.selected_custom_icon = app.get("icon")
         dialog.user_locked_custom_icon = False
 
-        def edit_refresh_ui_logic(entry):
+        def refresh_ui_logic(entry):
             self._update_browser_combo(browser_combo, entry.get_text(), ignore_app=app)
             self._async_fetch_favicon_preview(
                 entry.get_text(), preview_img, Gtk.Label(), dialog
             )
 
-        focus_controller = Gtk.EventControllerFocus.new()
-        focus_controller.connect("leave", lambda c: edit_refresh_ui_logic(url_entry))
-        url_entry.add_controller(focus_controller)
+        #focus_controller = Gtk.EventControllerFocus.new()
+        #focus_controller.connect("leave", lambda c: refresh_ui_logic(url_entry))
+        #url_entry.add_controller(focus_controller)
 
         btn_browse.connect(
             "clicked",
@@ -1997,7 +1530,6 @@ Categories={final_categories}
                                 message=_("🎉 Backup completo concluído com sucesso!")
                             )
                             self.alert.show(self)
-
                         GLib.idle_add(success_ui)
 
                     except Exception as e:
@@ -2006,13 +1538,11 @@ Categories={final_categories}
                                 os.unlink(temp_backup)
                             except:
                                 pass
-
                         def error_ui():
                             self.alert = Gtk.AlertDialog(
                                 message=_("🚫 Falha ao gerar backup"), detail=str(e)
                             )
                             self.alert.show(self)
-
                         GLib.idle_add(error_ui)
 
                 threading.Thread(target=worker, daemon=True).start()
@@ -2083,17 +1613,14 @@ Categories={final_categories}
                                 )
                             )
                             self.alert.show(self)
-
                         GLib.idle_add(success_ui)
 
                     except Exception as e:
-
                         def error_ui():
                             self.alert = Gtk.AlertDialog(
                                 message=_("🚫 Falha ao restaurar backup"), detail=str(e)
                             )
                             self.alert.show(self)
-
                         GLib.idle_add(error_ui)
 
                 threading.Thread(target=worker, daemon=True).start()
